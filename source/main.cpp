@@ -33,7 +33,7 @@ int main(int argc, char* args[])
 	const uint32_t height = 480;
 
 	SDL_Window* pWindow = SDL_CreateWindow(
-		"RayTracer - **Insert Name**",
+		"RayTracer - Bas Ruckebusch",
 		SDL_WINDOWPOS_UNDEFINED,
 		SDL_WINDOWPOS_UNDEFINED,
 		width, height, 0);
@@ -49,6 +49,23 @@ int main(int argc, char* args[])
 	pScene->Initialize();
 
 	//Start loop
+
+	float dotResult{};
+	std::cout << "Dot product test: " << std::endl;
+	dotResult = Vector3::Dot(Vector3::UnitX, Vector3::UnitX);
+	std::cout << dotResult << std::endl;
+	dotResult = Vector3::Dot(Vector3::UnitX, -Vector3::UnitX);
+	std::cout << dotResult << std::endl;
+	dotResult = Vector3::Dot(Vector3::UnitX, Vector3::UnitY);
+	std::cout << dotResult << std::endl;
+
+	Vector3 crossResult{};
+	std::cout << "Cross product test: " << std::endl;
+	crossResult = Vector3::Cross(Vector3::UnitZ, Vector3::UnitX);
+	std::cout << crossResult.x << "," << crossResult.y << "," << crossResult.z << std::endl;
+	crossResult = Vector3::Cross(Vector3::UnitX, Vector3::UnitZ);
+	std::cout << crossResult.x << "," << crossResult.y << "," << crossResult.z << std::endl;
+
 	pTimer->Start();
 	float printTimer = 0.f;
 	bool isLooping = true;
