@@ -49,23 +49,6 @@ int main(int argc, char* args[])
 	pScene->Initialize();
 
 	//Start loop
-
-	float dotResult{};
-	std::cout << "Dot product test: " << std::endl;
-	dotResult = Vector3::Dot(Vector3::UnitX, Vector3::UnitX);
-	std::cout << dotResult << std::endl;
-	dotResult = Vector3::Dot(Vector3::UnitX, -Vector3::UnitX);
-	std::cout << dotResult << std::endl;
-	dotResult = Vector3::Dot(Vector3::UnitX, Vector3::UnitY);
-	std::cout << dotResult << std::endl;
-
-	Vector3 crossResult{};
-	std::cout << "Cross product test: " << std::endl;
-	crossResult = Vector3::Cross(Vector3::UnitZ, Vector3::UnitX);
-	std::cout << crossResult.x << "," << crossResult.y << "," << crossResult.z << std::endl;
-	crossResult = Vector3::Cross(Vector3::UnitX, Vector3::UnitZ);
-	std::cout << crossResult.x << "," << crossResult.y << "," << crossResult.z << std::endl;
-
 	pTimer->Start();
 	float printTimer = 0.f;
 	bool isLooping = true;

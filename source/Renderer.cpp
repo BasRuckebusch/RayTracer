@@ -27,7 +27,7 @@ void Renderer::Render(Scene* pScene) const
 	auto& materials = pScene->GetMaterials();
 	auto& lights = pScene->GetLights();
 
-	const float aspectRatio{ float(m_Width) / m_Height };
+	const float aspectRatio{ static_cast<float>(m_Width) / m_Height };
 
 	//Loop over all the pixels
 
@@ -35,18 +35,12 @@ void Renderer::Render(Scene* pScene) const
 	{
 		for (int py{}; py < m_Height; ++py)
 		{
-			//Reset screen
-			m_pBufferPixels[px + (py * m_Width)] = SDL_MapRGB(m_pBuffer->format,
-				static_cast<uint8_t>(30),
-				static_cast<uint8_t>(30),
-				static_cast<uint8_t>(30));
+			const float cx = (2 * ((px + 0.5f) / m_Width) - 1);
+			const float cy = (1 - 2 * ((py + 0.5f) / m_Height));
+			const Vector3 rayDirection{ cx, cy, 1};
 
-			//float gradient = px / static_cast<float>(m_Width);
-			//gradient += py / static_cast<float>(m_Width);
-			//gradient /= 2.0f;
-			//ColorRGB finalColor{ gradient, gradient, gradient };
-
-			ColorRGB finalColor{ 0.2,1,1 };
+			Ray hitRay({ 0,0,0 }, rayDirection);
+			ColorRGB finalColor{ rayDirection.x,rayDirection.y,rayDirection.z };
 
 			//Update Color in Buffer
 			finalColor.MaxToOne();
@@ -57,6 +51,14 @@ void Renderer::Render(Scene* pScene) const
 				static_cast<uint8_t>(finalColor.b * 255));
 		}
 	}
+
+	//	Calculate ‘viewRay’
+	//	Scene::GetClosestHit(from Ray)
+	//		Iterate Sphere GeometriesHit ? Closest Hit ?
+	//		Iterate Plane GeometriesHit ? Closest Hit ?
+	//	Did Hit ?
+	//		NO > Pixel = BLACK
+	//		YES > Pixel = Material Colo
 
 	//@END
 	//Update SDL Surface
