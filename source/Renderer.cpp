@@ -31,9 +31,6 @@ void Renderer::Render(Scene* pScene) const
 
 	//Loop over all the pixels
 
-	//TEMP
-	const Sphere testSphere{ {0.f,0.f,100.f}, 50.f, 0 };
-
 	for (int px{}; px < m_Width; ++px)
 	{
 		for (int py{}; py < m_Height; ++py)
@@ -42,20 +39,16 @@ void Renderer::Render(Scene* pScene) const
 			const float cy = (1 - 2 * ((py + 0.5f) / m_Height));
 			const Vector3 rayDirection{ cx, cy, 1};
 
-			//Ray hitRay({ 0,0,0 }, rayDirection);
-			//ColorRGB finalColor{ rayDirection.x,rayDirection.y,rayDirection.z };
-
 			Ray viewRay({ 0,0,0 }, rayDirection);
 			ColorRGB finalColor{};
+
 			HitRecord closestHit{};
-			
-			GeometryUtils::HitTest_Sphere(testSphere, viewRay, closestHit);
+			pScene->GetClosestHit(viewRay, closestHit);
 			
 			if (closestHit.didHit)
 			{
-				// finalColor = materials[closestHit.materialIndex]->Shade();
-				const float scaled_t = (closestHit.t - 50.f) / 40.f;
-				finalColor = { scaled_t, scaled_t , scaled_t };
+				// Set final color to material if hit
+				finalColor = materials[closestHit.materialIndex]->Shade();
 			}
 
 			//Update Color in Buffer
