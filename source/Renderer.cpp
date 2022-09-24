@@ -35,8 +35,9 @@ void Renderer::Render(Scene* pScene) const
 	{
 		for (int py{}; py < m_Height; ++py)
 		{
-			const float cx = (2 * ((px + 0.5f) / m_Width) - 1) * aspectRatio;
+			const float cx = (2 * ((px + 0.5f) / m_Width) - 1) * aspectRatio;;
 			const float cy = (1 - 2 * ((py + 0.5f) / m_Height));
+
 			const Vector3 rayDirection{ cx, cy, 1};
 
 			Ray viewRay({ 0,0,0 }, rayDirection);
