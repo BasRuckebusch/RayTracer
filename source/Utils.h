@@ -12,6 +12,7 @@ namespace dae
 		//SPHERE HIT-TESTS
 		inline bool HitTest_Sphere(const Sphere& sphere, const Ray& ray, HitRecord& hitRecord, bool ignoreHitRecord = false)
 		{
+			hitRecord.didHit = false;
 			//todo W1
 
 			const Vector3 rayToSphere{ray.origin - sphere.origin};
@@ -26,15 +27,19 @@ namespace dae
 			}
 			else
 			{
-				const float t = ((-B - sqrt(discriminant)) / 2 * A);
-
-				if (t > ray.min && t < hitRecord.t)
+				const float sqrt_d = sqrt(discriminant);
+				float t = (-B - sqrt_d) / (2 * A);
+				if(t < ray.min)
 				{
+					t = (-B + sqrt_d) / (2 * A);
+				}
 
+				if (t <= ray.max && t >= ray.min)
+				{
 					hitRecord.origin = ray.origin + t * ray.direction;
 					hitRecord.t = t;
 					hitRecord.materialIndex = sphere.materialIndex;
-					hitRecord.normal = Vector3{ hitRecord.origin - sphere.origin } * sphere.radius;
+					hitRecord.normal = Vector3{ hitRecord.origin - sphere.origin }.Normalized();
 					hitRecord.didHit = true;
 					return true;
 				}
@@ -52,6 +57,7 @@ namespace dae
 		//PLANE HIT-TESTS
 		inline bool HitTest_Plane(const Plane& plane, const Ray& ray, HitRecord& hitRecord, bool ignoreHitRecord = false)
 		{
+			hitRecord.didHit = false;
 
 			const float t = Vector3::Dot((plane.origin - ray.origin), plane.normal) / Vector3::Dot(ray.direction, plane.normal);
 			if (t > ray.min && t < ray.max && t < hitRecord.t)
