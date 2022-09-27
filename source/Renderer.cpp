@@ -27,7 +27,9 @@ void Renderer::Render(Scene* pScene) const
 	auto& materials = pScene->GetMaterials();
 	auto& lights = pScene->GetLights();
 
-	const float aspectRatio{ static_cast<float>(m_Width) / static_cast<float>(m_Height) };
+	const float aspectRatio{ static_cast<float>(m_Width) / static_cast<float>(m_Height) }; 
+
+	// const float FOV{ tan((camera.fovAngle * TO_RADIANS) / 2) };
 
 	//Loop over all the pixels
 
@@ -35,12 +37,13 @@ void Renderer::Render(Scene* pScene) const
 	{
 		for (int py{}; py < m_Height; ++py)
 		{
-			const float cx = (2 * ((px + 0.5f) / m_Width) - 1) * aspectRatio;
-			const float cy = (1 - 2 * ((py + 0.5f) / m_Height));
+
+			const float cx = (2 * ((px + 0.5f) / m_Width) - 1) * aspectRatio * camera.FOV;
+			const float cy = (1 - 2 * ((py + 0.5f) / m_Height)) * camera.FOV;
 
 			const Vector3 rayDirection{ cx, cy, 1};
 
-			Ray viewRay({ 0,0,0 }, rayDirection);
+			Ray viewRay(camera.origin, rayDirection);
 			ColorRGB finalColor{};
 
 			HitRecord closestHit{};
@@ -61,14 +64,6 @@ void Renderer::Render(Scene* pScene) const
 				static_cast<uint8_t>(finalColor.b * 255));
 		}
 	}
-
-	//	Calculate ‘viewRay’
-	//	Scene::GetClosestHit(from Ray)
-	//		Iterate Sphere GeometriesHit ? Closest Hit ?
-	//		Iterate Plane GeometriesHit ? Closest Hit ?
-	//	Did Hit ?
-	//		NO > Pixel = BLACK
-	//		YES > Pixel = Material Colo
 
 	//@END
 	//Update SDL Surface

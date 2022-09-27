@@ -14,13 +14,15 @@ namespace dae
 
 		Camera(const Vector3& _origin, float _fovAngle):
 			origin{_origin},
-			fovAngle{_fovAngle}
+			fovAngle{_fovAngle},
+			FOV{ tan((_fovAngle * TO_RADIANS) / 2) }
 		{
 		}
 
 
 		Vector3 origin{};
 		float fovAngle{90.f};
+		float FOV{tan((fovAngle * TO_RADIANS) / 2)};
 
 		Vector3 forward{Vector3::UnitZ};
 		Vector3 up{Vector3::UnitY};
@@ -31,6 +33,11 @@ namespace dae
 
 		Matrix cameraToWorld{};
 
+		void ChangeFOV(const float& _fovAngle)
+		{
+			fovAngle = fovAngle;
+			FOV = tan((_fovAngle * TO_RADIANS) / 2);
+		}
 
 		Matrix CalculateCameraToWorld()
 		{
