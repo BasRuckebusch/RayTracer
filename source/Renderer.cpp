@@ -41,7 +41,8 @@ void Renderer::Render(Scene* pScene) const
 			const float cx = (2 * ((px + 0.5f) / m_Width) - 1) * aspectRatio * camera.FOV;
 			const float cy = (1 - 2 * ((py + 0.5f) / m_Height)) * camera.FOV;
 
-			const Vector3 rayDirection{ cx, cy, 1};
+			Vector3 rayDirection{ cx, cy, 1};
+			rayDirection = camera.CalculateCameraToWorld().TransformVector(rayDirection);
 
 			Ray viewRay(camera.origin, rayDirection);
 			ColorRGB finalColor{};
