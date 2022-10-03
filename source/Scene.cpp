@@ -30,7 +30,7 @@ namespace dae {
 	{
 		HitRecord hitTest;
 
-		for (Sphere sphere : m_SphereGeometries)
+		for (auto& sphere : m_SphereGeometries)
 		{
 			if (GeometryUtils::HitTest_Sphere(sphere, ray, hitTest))
 			{
@@ -40,7 +40,7 @@ namespace dae {
 				}
 			}
 		}
-		for (Plane plane : m_PlaneGeometries)
+		for (auto& plane : m_PlaneGeometries)
 		{
 			if (GeometryUtils::HitTest_Plane(plane, ray, hitTest))
 			{

@@ -13,7 +13,6 @@ namespace dae
 		inline bool HitTest_Sphere(const Sphere& sphere, const Ray& ray, HitRecord& hitRecord, bool ignoreHitRecord = false)
 		{
 			hitRecord.didHit = false;
-			//todo W1
 
 			const Vector3 rayToSphere{ray.origin - sphere.origin};
 			const float A{ Vector3::Dot(ray.direction, ray.direction) };
@@ -116,9 +115,7 @@ namespace dae
 		//Direction from target to light
 		inline Vector3 GetDirectionToLight(const Light& light, const Vector3 origin)
 		{
-			//todo W3
-			assert(false && "No Implemented Yet!");
-			return {};
+			return Vector3{ light.origin - origin };
 		}
 
 		inline ColorRGB GetRadiance(const Light& light, const Vector3& target)

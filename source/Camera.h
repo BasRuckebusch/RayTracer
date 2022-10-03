@@ -1,5 +1,6 @@
 #pragma once
 #include <cassert>
+#include <iostream>
 #include <SDL_keyboard.h>
 #include <SDL_mouse.h>
 
@@ -42,10 +43,6 @@ namespace dae
 
 		Matrix CalculateCameraToWorld()
 		{
-			//todo: W2
-			// assert(false && "Not Implemented Yet");
-			// return {};
-
 			const Vector3 worldUp{ 0.f,1.f,0.f };
 			right = Vector3::Cross(worldUp, forward).Normalized();
 			up = Vector3::Cross(forward, right).Normalized();
@@ -111,11 +108,22 @@ namespace dae
 				ChangeFOV(fovAngle + 1);
 			}
 
+			// Up down keys
+			if (pKeyboardState[SDL_SCANCODE_Q])
+			{
+				origin.y -= velocity * deltaTime;
+			}
+			else if (pKeyboardState[SDL_SCANCODE_E])
+			{
+				origin.y += velocity * deltaTime;
+			}
+
 			//Mouse Input
 			int mouseX{}, mouseY{};
 			const uint32_t mouseState = SDL_GetRelativeMouseState(&mouseX, &mouseY);
 
-			const float ASpeed = 0.2f;
+			const float MouseSensitivity = 0.2f;
+			const float lookConstraint = 0.95f;
 			float YawAngle{};
 			float PitchAngle{};
 
@@ -137,25 +145,36 @@ namespace dae
 				{
 					if (mouseX != 0)
 					{
-						YawAngle -= mouseX * ASpeed * deltaTime;
+						YawAngle -= mouseX * MouseSensitivity * deltaTime;
 					}
 
 					if (mouseY != 0)
 					{
-						PitchAngle -= mouseY * ASpeed * deltaTime;
+						PitchAngle -= mouseY * MouseSensitivity * deltaTime;
 					}
 
 					finalRotation = Matrix::CreateRotation(PitchAngle, YawAngle, 0);
-
+					
 					forward = finalRotation.TransformVector(forward);
 					forward.Normalize();
+					std::cout << forward.x << " - " << forward.y << "\n";
+
+					// stop camera from upside down
+					if (forward.y > lookConstraint)
+					{
+						forward.y = lookConstraint;
+					}
+					if (forward.y < -lookConstraint)
+					{
+						forward.y = -lookConstraint;
+					}
 				}
 				// LMB
 				if (mouseState & SDL_BUTTON_LMASK)
 				{
 					if (mouseX != 0)
 					{
-						YawAngle -= mouseX * ASpeed * deltaTime;
+						YawAngle -= mouseX * MouseSensitivity * deltaTime;
 					}
 
 					if (mouseY != 0)

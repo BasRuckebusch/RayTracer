@@ -104,9 +104,12 @@ namespace dae {
 
 	Matrix Matrix::CreateTranslation(float x, float y, float z)
 	{
-		//todo W1
-		assert(false && "Not Implemented Yet");
-		return {};
+		return Matrix(
+			Vector4{ 0.f, 0.f, 0.f, x },
+			Vector4{ 0.f, 0.f, 0.f, y },
+			Vector4{ 0.f, 0.f,0.f, z },
+			Vector4{ 0.f, 0.f, 0.f, 1.f }
+		);
 	}
 
 	Matrix Matrix::CreateTranslation(const Vector3& t)
@@ -120,10 +123,10 @@ namespace dae {
 		const float s = sin(pitch);
 
 		return Matrix(
-			Vector3{ 1.f, 0.f, 0.f },
-			Vector3{ 0.f, c, -s},
-			Vector3{ 0.f, s, c },
-			Vector3{ 0.f, 0.f, 0.f }
+			Vector4{ 1.f, 0.f, 0.f, 0.f },
+			Vector4{ 0.f, c, -s, 0.f },
+			Vector4{ 0.f, s, c, 0.f },
+			Vector4{ 0.f, 0.f, 0.f , 1.f }
 		);
 	}
 
@@ -133,10 +136,10 @@ namespace dae {
 		const float s = sin(yaw);
 
 		return Matrix(
-			Vector3{ c, 0.f, s },
-			Vector3{ 0.f, 1.f, 0.f },
-			Vector3{ -s, 0, c },
-			Vector3{ 0.f, 0.f, 0.f }
+			Vector4{ c, 0.f, s, 0.f },
+			Vector4{ 0.f, 1.f, 0.f, 0.f },
+			Vector4{ -s, 0, c, 0.f },
+			Vector4{ 0.f, 0.f, 0.f, 1.f }
 		);
 
 	}
@@ -147,10 +150,10 @@ namespace dae {
 		const float s = sin(roll);
 
 		return Matrix(
-			Vector3{ c, -s, 0.f },
-			Vector3{ s, c, 0.f },
-			Vector3{ 0.f, 0.f, 1.f },
-			Vector3{ 0.f, 0.f, 0.f }
+			Vector4{ c, -s, 0.f, 0.f },
+			Vector4{ s, c, 0.f, 0.f },
+			Vector4{ 0.f, 0.f, 1.f, 0.f },
+			Vector4{ 0.f, 0.f, 0.f, 1.f }
 		);
 	}
 
@@ -171,9 +174,12 @@ namespace dae {
 
 	Matrix Matrix::CreateScale(float sx, float sy, float sz)
 	{
-		//todo W1
-		assert(false && "Not Implemented Yet");
-		return {};
+		return Matrix(
+			Vector4{ sx, 0.f, 0.f, 0.f },
+			Vector4{ 0.f, sy, 0.f, 0.f },
+			Vector4{ 0.f, 0.f,sz, 0.f},
+			Vector4{ 0.f, 0.f, 0.f, 1.f }
+		);
 	}
 
 	Matrix Matrix::CreateScale(const Vector3& s)
