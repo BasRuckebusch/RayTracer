@@ -49,11 +49,24 @@ void Renderer::Render(Scene* pScene) const
 
 			HitRecord closestHit{};
 			pScene->GetClosestHit(viewRay, closestHit);
-			
+
+
 			if (closestHit.didHit)
 			{
+				bool shade{ false };
+				for (auto& light : pScene->GetLights())
+				{
+					Vector3 invLightRay = LightUtils::GetDirectionToLight(light, closestHit.origin);
+					Ray lray{ closestHit.origin, invLightRay.Normalized(),0.1f, invLightRay.Magnitude()};
+					shade = pScene->DoesHit(lray);
+				}
+
 				// Set final color to material if hit
 				finalColor = materials[closestHit.materialIndex]->Shade();
+				if (shade)
+				{
+					finalColor * 0.5;
+				}
 			}
 
 			//Update Color in Buffer

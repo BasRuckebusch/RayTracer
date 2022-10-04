@@ -1,6 +1,5 @@
 #pragma once
 #include <cassert>
-#include <iostream>
 #include <SDL_keyboard.h>
 #include <SDL_mouse.h>
 
@@ -136,7 +135,6 @@ namespace dae
 				{
 					origin.y -= mouseY * velocity * deltaTime;
 				}
-				
 			}
 			else
 			{
@@ -157,7 +155,6 @@ namespace dae
 					
 					forward = finalRotation.TransformVector(forward);
 					forward.Normalize();
-					std::cout << forward.x << " - " << forward.y << "\n";
 
 					// stop camera from upside down
 					if (forward.y > lookConstraint)
@@ -176,7 +173,6 @@ namespace dae
 					{
 						YawAngle -= mouseX * MouseSensitivity * deltaTime;
 					}
-
 					if (mouseY != 0)
 					{
 						origin -= mouseY * velocity * forward * deltaTime;
