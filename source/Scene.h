@@ -107,4 +107,19 @@ namespace dae
 
 		void Initialize() override;
 	};
+	//+++++++++++++++++++++++++++++++++++++++++
+	// Test Scene
+	class Scene_TEST final : public Scene
+	{
+	public:
+		Scene_TEST() = default;
+		~Scene_TEST() override = default;
+
+		Scene_TEST(const Scene_W3&) = delete;
+		Scene_TEST(Scene_W3&&) noexcept = delete;
+		Scene_TEST& operator=(const Scene_W3&) = delete;
+		Scene_TEST& operator=(Scene_W3&&) noexcept = delete;
+
+		void Initialize() override;
+	};
 }

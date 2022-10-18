@@ -61,7 +61,8 @@ namespace dae
 		{
 			//todo: W3
 			//assert(false && "Not Implemented Yet");
-			return {};
+			// (m_DiffuseColor * m_DiffuseReflectance) / PI
+			return {  };
 		}
 
 	private:
@@ -100,7 +101,7 @@ namespace dae
 #pragma region Material COOK TORRENCE
 	//COOK TORRENCE
 	class Material_CookTorrence final : public Material
-	{
+	{  
 	public:
 		Material_CookTorrence(const ColorRGB& albedo, float metalness, float roughness):
 			m_Albedo(albedo), m_Metalness(metalness), m_Roughness(roughness)

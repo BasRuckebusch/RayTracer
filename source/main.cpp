@@ -48,7 +48,8 @@ int main(int argc, char* args[])
 	// initialise scene
 	// const auto pScene = new Scene_W1();
 	// const auto pScene = new Scene_W2();
-	const auto pScene = new Scene_W3();
+	// const auto pScene = new Scene_W3();
+	const auto pScene = new Scene_TEST();
 	pScene->Initialize();
 
 	//Start loop
@@ -70,6 +71,12 @@ int main(int argc, char* args[])
 			case SDL_KEYUP:
 				if(e.key.keysym.scancode == SDL_SCANCODE_X)
 					takeScreenshot = true;
+				break;
+			case SDL_KEYDOWN:
+				if (e.key.keysym.scancode == SDL_SCANCODE_F2)
+					pRenderer->TogglShadows();
+				if (e.key.keysym.scancode == SDL_SCANCODE_F3)
+					pRenderer->CycleLightingMode();
 				break;
 			}
 		}
