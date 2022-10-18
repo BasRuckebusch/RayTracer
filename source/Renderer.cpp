@@ -1,6 +1,8 @@
 //External includes
 #include "SDL.h"
 #include "SDL_surface.h"
+#include <stdio.h>
+#include <omp.h>
 
 //Project includes
 #include "Renderer.h"
@@ -27,12 +29,12 @@ void Renderer::Render(Scene* pScene) const
 	auto& materials = pScene->GetMaterials();
 	auto& lights = pScene->GetLights();
 
-	const float aspectRatio{ static_cast<float>(m_Width) / static_cast<float>(m_Height) }; 
+	const float aspectRatio{ static_cast<float>(m_Width) / static_cast<float>(m_Height) };
 
 	// const float FOV{ tan((camera.fovAngle * TO_RADIANS) / 2) };
 
 	//Loop over all the pixels
-
+#pragma omp parallel for
 	for (int px{}; px < m_Width; ++px)
 	{
 		for (int py{}; py < m_Height; ++py)
@@ -41,7 +43,7 @@ void Renderer::Render(Scene* pScene) const
 			const float cx = (2 * ((px + 0.5f) / m_Width) - 1) * aspectRatio * camera.FOV;
 			const float cy = (1 - 2 * ((py + 0.5f) / m_Height)) * camera.FOV;
 
-			Vector3 rayDirection{ cx, cy, 1};
+			Vector3 rayDirection{ cx, cy, 1 };
 			rayDirection = camera.CalculateCameraToWorld().TransformVector(rayDirection);
 
 			Ray viewRay(camera.origin, rayDirection);
@@ -54,10 +56,10 @@ void Renderer::Render(Scene* pScene) const
 			if (closestHit.didHit)
 			{
 				bool shade{ false };
-				for (auto& light : pScene->GetLights())
+				for (auto& light : lights)
 				{
 					Vector3 invLightRay = LightUtils::GetDirectionToLight(light, closestHit.origin);
-					Ray lray{ closestHit.origin, invLightRay.Normalized(),0.1f, invLightRay.Magnitude()};
+					Ray lray{ closestHit.origin, invLightRay.Normalized(),0.1f, invLightRay.Magnitude() };
 					shade = pScene->DoesHit(lray);
 				}
 
@@ -71,7 +73,7 @@ void Renderer::Render(Scene* pScene) const
 
 			//Update Color in Buffer
 			finalColor.MaxToOne();
-		
+
 			m_pBufferPixels[px + (py * m_Width)] = SDL_MapRGB(m_pBuffer->format,
 				static_cast<uint8_t>(finalColor.r * 255),
 				static_cast<uint8_t>(finalColor.g * 255),

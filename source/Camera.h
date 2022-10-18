@@ -1,5 +1,6 @@
 #pragma once
 #include <cassert>
+#include <iostream>
 #include <SDL_keyboard.h>
 #include <SDL_mouse.h>
 
@@ -94,7 +95,7 @@ namespace dae
 			}
 			else if (pKeyboardState[SDL_SCANCODE_D])
 			{
-				origin += Vector3{ ONB[0] } *velocity * deltaTime;
+				origin += Vector3{ ONB[0] } * velocity * deltaTime;
 			}
 
 			// FOV change
@@ -145,25 +146,9 @@ namespace dae
 					{
 						YawAngle -= mouseX * MouseSensitivity * deltaTime;
 					}
-
 					if (mouseY != 0)
 					{
 						PitchAngle -= mouseY * MouseSensitivity * deltaTime;
-					}
-
-					finalRotation = Matrix::CreateRotation(PitchAngle, YawAngle, 0);
-					
-					forward = finalRotation.TransformVector(forward);
-					forward.Normalize();
-
-					// stop camera from upside down
-					if (forward.y > lookConstraint)
-					{
-						forward.y = lookConstraint;
-					}
-					if (forward.y < -lookConstraint)
-					{
-						forward.y = -lookConstraint;
 					}
 				}
 				// LMB
@@ -177,11 +162,21 @@ namespace dae
 					{
 						origin -= mouseY * velocity * forward * deltaTime;
 					}
+				}
 
-					finalRotation = Matrix::CreateRotation(PitchAngle, YawAngle, 0);
+				finalRotation = Matrix::CreateRotation(PitchAngle, YawAngle, 0);
 
-					forward = finalRotation.TransformVector(forward);
-					forward.Normalize();
+				forward = finalRotation.TransformVector(forward);
+				forward.Normalize();
+
+				// stop camera from upside down
+				if (forward.y > lookConstraint)
+				{
+					forward.y = lookConstraint;
+				}
+				if (forward.y < -lookConstraint)
+				{
+					forward.y = -lookConstraint;
 				}
 			}
 		}
