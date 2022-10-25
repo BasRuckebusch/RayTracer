@@ -124,8 +124,6 @@ namespace dae
 
 			const float MouseSensitivity = 0.2f;
 			const float lookConstraint = 0.95f;
-			float YawAngle{};
-			float PitchAngle{};
 
 			Matrix finalRotation{};
 
@@ -144,11 +142,11 @@ namespace dae
 				{
 					if (mouseX != 0)
 					{
-						YawAngle -= mouseX * MouseSensitivity * deltaTime;
+						totalYaw -= mouseX * MouseSensitivity * deltaTime;
 					}
 					if (mouseY != 0)
 					{
-						PitchAngle -= mouseY * MouseSensitivity * deltaTime;
+						totalPitch -= mouseY * MouseSensitivity * deltaTime;
 					}
 				}
 				// LMB
@@ -156,7 +154,7 @@ namespace dae
 				{
 					if (mouseX != 0)
 					{
-						YawAngle -= mouseX * MouseSensitivity * deltaTime;
+						totalYaw -= mouseX * MouseSensitivity * deltaTime;
 					}
 					if (mouseY != 0)
 					{
@@ -164,10 +162,11 @@ namespace dae
 					}
 				}
 
-				finalRotation = Matrix::CreateRotation(PitchAngle, YawAngle, 0);
+				finalRotation = Matrix::CreateRotation(totalPitch, totalYaw, 0);
 
-				forward = finalRotation.TransformVector(forward);
+				forward = finalRotation.TransformVector(Vector3::UnitZ);
 				forward.Normalize();
+
 
 				// stop camera from upside down
 				if (forward.y > lookConstraint)

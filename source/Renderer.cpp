@@ -77,10 +77,16 @@ void Renderer::Render(Scene* pScene) const
 				//		finalColor * 0.5;
 				//	}
 
-				ColorRGB E{};
+				
 				for (auto& light : lights)
 				{
-					finalColor += LightUtils::GetRadiance(light, closestHit.origin);
+					const ColorRGB E = LightUtils::GetRadiance(light, closestHit.origin);
+					const float lambertCos = Vector3::Dot(closestHit.normal, LightUtils::GetDirectionToLight(light, closestHit.origin).Normalized());
+					if (lambertCos > 0)
+					{
+						finalColor += E * materials[closestHit.materialIndex]->Shade() * lambertCos;
+					}
+					
 				}
 			}
 

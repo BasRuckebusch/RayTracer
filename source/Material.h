@@ -62,7 +62,8 @@ namespace dae
 			//todo: W3
 			//assert(false && "Not Implemented Yet");
 			// (m_DiffuseColor * m_DiffuseReflectance) / PI
-			return {  };
+
+			return BRDF::Lambert(m_DiffuseReflectance, m_DiffuseColor);
 		}
 
 	private:
