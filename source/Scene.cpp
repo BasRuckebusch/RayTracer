@@ -68,6 +68,7 @@ namespace dae {
 				return true;
 			}
 		}
+		return false;
 	}
 
 #pragma region Scene Helpers

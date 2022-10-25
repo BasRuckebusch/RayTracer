@@ -55,7 +55,7 @@ void Renderer::Render(Scene* pScene) const
 
 			if (closestHit.didHit)
 			{
-				bool shade{ false };
+				// bool shade{ false };
 				
 				// Lighting
 
@@ -77,7 +77,8 @@ void Renderer::Render(Scene* pScene) const
 				//		finalColor * 0.5;
 				//	}
 
-				
+
+
 				for (auto& light : lights)
 				{
 					const ColorRGB E = LightUtils::GetRadiance(light, closestHit.origin);
@@ -86,7 +87,17 @@ void Renderer::Render(Scene* pScene) const
 					{
 						finalColor += E * materials[closestHit.materialIndex]->Shade() * lambertCos;
 					}
-					
+
+					if (m_ShadowsEnabled)
+					{
+						Vector3 invLightRay = LightUtils::GetDirectionToLight(light, closestHit.origin);
+						Ray lray{ closestHit.origin, invLightRay.Normalized(),0.1f, invLightRay.Magnitude() };
+
+						if (pScene->DoesHit(lray))
+						{
+							finalColor *= 0.5f;
+						}
+					}
 				}
 			}
 
