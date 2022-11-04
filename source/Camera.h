@@ -169,14 +169,14 @@ namespace dae
 
 
 				// stop camera from upside down
-				if (forward.y > lookConstraint)
-				{
-					forward.y = lookConstraint;
-				}
-				if (forward.y < -lookConstraint)
-				{
-					forward.y = -lookConstraint;
-				}
+				//	if (forward.y > lookConstraint)
+				//	{
+				//		forward.y = lookConstraint;
+				//	}
+				//	if (forward.y < -lookConstraint)
+				//	{
+				//		forward.y = -lookConstraint;
+				//	}
 			}
 		}
 	};

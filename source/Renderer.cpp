@@ -57,7 +57,7 @@ void Renderer::Render(Scene* pScene) const
 			{
 				for (auto& light : lights)
 				{
-
+					
 					const ColorRGB E = LightUtils::GetRadiance(light, closestHit.origin);
 					const float lambertCos = Vector3::Dot(closestHit.normal, LightUtils::GetDirectionToLight(light, closestHit.origin).Normalized());
 					if (lambertCos < 0)
@@ -65,10 +65,10 @@ void Renderer::Render(Scene* pScene) const
 						continue;
 					}
 
+					const Vector3 invLightRay = LightUtils::GetDirectionToLight(light, closestHit.origin);
 					if (m_ShadowsEnabled)
 					{
-						Vector3 invLightRay = LightUtils::GetDirectionToLight(light, closestHit.origin);
-						Ray lray{ closestHit.origin, invLightRay.Normalized(),0.1f, invLightRay.Magnitude() };
+						const Ray lray{ closestHit.origin, invLightRay.Normalized(),0.1f, invLightRay.Magnitude() };
 
 						if (pScene->DoesHit(lray))
 						{
@@ -76,7 +76,7 @@ void Renderer::Render(Scene* pScene) const
 						}
 					}
 
-					finalColor += E * materials[closestHit.materialIndex]->Shade() * lambertCos;
+					finalColor += E * materials[closestHit.materialIndex]->Shade(closestHit, invLightRay.Normalized(), viewRay.direction) * lambertCos;
 				}
 			}
 

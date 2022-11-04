@@ -82,9 +82,7 @@ namespace dae
 
 		ColorRGB Shade(const HitRecord& hitRecord = {}, const Vector3& l = {}, const Vector3& v = {}) override
 		{
-			//todo: W3
-			assert(false && "Not Implemented Yet");
-			return {};
+			return BRDF::Lambert(m_DiffuseReflectance, m_DiffuseColor) + BRDF::Phong(m_SpecularReflectance, m_PhongExponent, l, -v, hitRecord.normal);
 		}
 
 	private:
@@ -107,9 +105,19 @@ namespace dae
 
 		ColorRGB Shade(const HitRecord& hitRecord = {}, const Vector3& l = {}, const Vector3& v = {}) override
 		{
-			//todo: W3
-			//assert(false && "Not Implemented Yet");
-			return {};
+			const Vector3 halfVector = (v + l) / (v + l).Magnitude();
+			const Vector3 normal = hitRecord.normal;
+			const ColorRGB f0 = (m_Metalness == 0) ? ColorRGB(0.04, 0.04, 0.04) : m_Albedo;
+
+			const ColorRGB F = BRDF::FresnelFunction_Schlick(halfVector, v, f0);
+			const float D = BRDF::NormalDistribution_GGX(normal, halfVector, m_Roughness);
+			const float G = BRDF::GeometryFunction_Smith(normal, v, l, m_Roughness);
+
+			const ColorRGB specular = (D * F * G) * (1 / (4 * (Vector3::Dot(v, normal)) * (Vector3::Dot(l, normal))));
+			const ColorRGB kd = (m_Metalness == 0) ? ColorRGB(0, 0, 0) : ColorRGB(1, 1, 1) - F;
+			const ColorRGB diffuse = BRDF::Lambert(kd, specular);
+
+			return diffuse + specular;
 		}
 
 	private:

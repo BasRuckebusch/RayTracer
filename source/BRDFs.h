@@ -1,6 +1,7 @@
 #pragma once
 #include <cassert>
 #include "Math.h"
+#include <iostream>
 
 namespace dae
 {
@@ -32,9 +33,10 @@ namespace dae
 		 */
 		static ColorRGB Phong(float ks, float exp, const Vector3& l, const Vector3& v, const Vector3& n)
 		{
-			//todo: W3
-			assert(false && "Not Implemented Yet");
-			return {};
+			const Vector3 r = l - 2 * Vector3::Dot(n,l) * n;
+			const float cosAlpha = Vector3::Dot(r, v);
+			const float PSR = ks * pow(cosAlpha, exp);
+			return { ColorRGB(PSR , PSR , PSR ) };
 		}
 
 		/**
@@ -46,9 +48,9 @@ namespace dae
 		 */
 		static ColorRGB FresnelFunction_Schlick(const Vector3& h, const Vector3& v, const ColorRGB& f0)
 		{
-			//todo: W3
-			assert(false && "Not Implemented Yet");
-			return {};
+			const float pow = 1 - Vector3::Dot(h, v);
+
+			return f0 + (ColorRGB(1, 1,1) - f0) * (pow * pow * pow * pow * pow);
 		}
 
 		/**
@@ -60,9 +62,11 @@ namespace dae
 		 */
 		static float NormalDistribution_GGX(const Vector3& n, const Vector3& h, float roughness)
 		{
-			//todo: W3
-			assert(false && "Not Implemented Yet");
-			return {};
+			const float alphaSquared = roughness * roughness * roughness * roughness;
+			const float dot = Vector3::Dot(n, h);
+			const float c = Square(dot) * (alphaSquared - 1) + 1;
+
+			return alphaSquared / PI * (c*c);
 		}
 
 
@@ -75,9 +79,10 @@ namespace dae
 		 */
 		static float GeometryFunction_SchlickGGX(const Vector3& n, const Vector3& v, float roughness)
 		{
-			//todo: W3
-			assert(false && "Not Implemented Yet");
-			return {};
+			const float dot = Vector3::Dot(n, v);
+			const float k = Square((roughness + 1)) / 8;
+
+			return dot / (dot * (1 - k) + k);
 		}
 
 		/**
@@ -90,9 +95,7 @@ namespace dae
 		 */
 		static float GeometryFunction_Smith(const Vector3& n, const Vector3& v, const Vector3& l, float roughness)
 		{
-			//todo: W3
-			assert(false && "Not Implemented Yet");
-			return {};
+			return GeometryFunction_SchlickGGX(n, v, roughness) * GeometryFunction_SchlickGGX(n, l, roughness);
 		}
 
 	}

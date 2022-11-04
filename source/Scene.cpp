@@ -240,12 +240,14 @@ namespace dae {
 		const auto matLambert_Red = AddMaterial(new Material_Lambert{ colors::Red, 1.f });
 		const auto matLambert_Blue = AddMaterial(new Material_Lambert{ colors::Blue, 1.f });
 		const auto matLambert_Yellow = AddMaterial(new Material_Lambert{ colors::Yellow, 1.f });
+		const auto matLambertPhong_Blue = AddMaterial(new Material_LambertPhong{ colors::Blue, 1.f, 1.f, 60.f });
+		
 
 		//Spheres
 		AddSphere({ -.75f, 1.f, 0.f }, 1.f, matLambert_Red);
-		AddSphere({ .75f, 1.f, 0.f }, 1.f, matLambert_Blue);
+		AddSphere({ .75f, 1.f, 0.f }, 1.f, matLambertPhong_Blue);
 
-		//Planed
+		//Planes
 		AddPlane({ 0.f, 0.f, 0.f }, { 0.f, 1.f,0.f }, matLambert_Yellow);
 
 		//Lights

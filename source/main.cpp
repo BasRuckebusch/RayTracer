@@ -48,8 +48,8 @@ int main(int argc, char* args[])
 	// initialise scene
 	// const auto pScene = new Scene_W1();
 	// const auto pScene = new Scene_W2();
-	// const auto pScene = new Scene_W3();
-	const auto pScene = new Scene_TEST();
+	const auto pScene = new Scene_W3();
+	// const auto pScene = new Scene_TEST();
 	pScene->Initialize();
 
 	//Start loop
