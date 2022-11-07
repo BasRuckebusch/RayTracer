@@ -84,8 +84,62 @@ namespace dae
 		inline bool HitTest_Triangle(const Triangle& triangle, const Ray& ray, HitRecord& hitRecord, bool ignoreHitRecord = false)
 		{
 			//todo W5
-			assert(false && "No Implemented Yet!");
-			return false;
+			//	assert(false && "No Implemented Yet!");
+
+			const Vector3 a{ triangle.v1 - triangle.v0 };
+			const Vector3 b{ triangle.v2 - triangle.v0 };
+
+			const Vector3 normal = Vector3::Cross(a, b).Normalized();
+			const float dot{ Vector3::Dot(normal, ray.direction) };
+			if (dot == 0) return false;
+
+			const Vector3 center = Vector3{ (Vector3{triangle.v0} + Vector3{triangle.v1} + Vector3{triangle.v2}) * 0.333f };
+			const Vector3 L = center - ray.origin;
+
+			const float t{ Vector3::Dot(L, normal) / Vector3::Dot(ray.direction, normal) };
+
+			if (t < ray.min || t > ray.max)
+			{
+				return false;
+			}
+			
+			const Vector3 p = ray.origin + t * ray.direction;
+			const Vector3 edgeA = triangle.v1 - triangle.v0;
+			Vector3 pointToSide = p - triangle.v0;
+			if (Vector3::Dot(normal, Vector3::Cross(edgeA, pointToSide)) < 0.f) 
+			{
+				return false;
+			}
+			
+			const Vector3 edgeB = triangle.v2 - triangle.v1 ;
+			pointToSide = p - triangle.v1;
+			if (Vector3::Dot(normal, Vector3::Cross(edgeB, pointToSide)) < 0.0f) {
+				return false;
+			}
+			
+			const Vector3 edgeC = triangle.v0 - triangle.v2;
+			pointToSide = p - triangle.v2;
+			if (Vector3::Dot(normal, Vector3::Cross(edgeC, pointToSide)) < 0.0f) {
+				return false;
+			}
+
+			switch (triangle.cullMode) {
+			case TriangleCullMode::NoCulling:
+				break;
+			case TriangleCullMode::BackFaceCulling:
+				if (dot > 0.f) return false;
+				break;
+			case TriangleCullMode::FrontFaceCulling:
+				if (dot < 0.f) return false;
+				break;
+			}
+
+			hitRecord.origin = ray.origin + t * ray.direction;
+			hitRecord.t = t;
+			hitRecord.materialIndex = triangle.materialIndex;
+			hitRecord.normal = normal;
+			hitRecord.didHit = true;
+			return true;
 		}
 
 		inline bool HitTest_Triangle(const Triangle& triangle, const Ray& ray)
