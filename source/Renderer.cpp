@@ -75,8 +75,25 @@ void Renderer::Render(Scene* pScene) const
 							continue;
 						}
 					}
+					
+					switch (m_CurrentLightingMode)
+					{
+					case LightingMode::Combined:
+						finalColor += E * materials[closestHit.materialIndex]->Shade(closestHit, invLightRay.Normalized(), -viewRay.direction.Normalized()) * lambertCos;
+						break;
+					case LightingMode::ObservedArea:
+						finalColor += E;
+						break;
+					case LightingMode::Radiance:
+						finalColor += E * lambertCos;
+						break;
+					case LightingMode::BRDF:
+						finalColor += materials[closestHit.materialIndex]->Shade(closestHit, invLightRay.Normalized(), viewRay.direction.Normalized());
+						break;
+					
+					}
+					
 
-					finalColor += E * materials[closestHit.materialIndex]->Shade(closestHit, invLightRay.Normalized(), viewRay.direction) * lambertCos;
 				}
 			}
 

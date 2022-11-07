@@ -201,12 +201,12 @@ namespace dae {
 		m_Camera.origin = { 0.f, 3.f, -9.f };
 		m_Camera.ChangeFOV(45.f);
 
-		const auto matCT_GrayRoughMetal = AddMaterial(new Material_CookTorrence({ .972f, .960f, .915f }, 1.f, 1.f));
-		const auto matCT_GrayMediumMetal = AddMaterial(new Material_CookTorrence({ .972f, .960f, .915f }, 1.f, .6f));
-		const auto matCT_GraySmoothMetal = AddMaterial(new Material_CookTorrence({ .972f, .75f, .915f }, 1.f, .1f));
-		const auto matCT_GrayRoughPlastic = AddMaterial(new Material_CookTorrence({ .75f, .75f, .75f }, .0f, 1.f));
-		const auto matCT_GrayMediumPlastic = AddMaterial(new Material_CookTorrence({ .75f, .75f, .75f }, .0f, .6f));
-		const auto matCT_GraySmoothPlastic = AddMaterial(new Material_CookTorrence({ .75f, .75f, .75f }, .0f, .1f));
+		const auto matCT_GrayRoughMetal = AddMaterial(new Material_CookTorrence({ .95f, .93f, .88f}, 1, 1.f));
+		const auto matCT_GrayMediumMetal = AddMaterial(new Material_CookTorrence({ .95f, .93f, .88f }, 1, .6f));
+		const auto matCT_GraySmoothMetal = AddMaterial(new Material_CookTorrence({ .95f, .93f, .88f }, 1, .1f));
+		const auto matCT_GrayRoughPlastic = AddMaterial(new Material_CookTorrence({ .8f, .8f, .8f }, 0, 1.f));
+		const auto matCT_GrayMediumPlastic = AddMaterial(new Material_CookTorrence({ .8f, .8f, .8f }, 0, .6f));
+		const auto matCT_GraySmoothPlastic = AddMaterial(new Material_CookTorrence({ .8f, .8f, .8f }, 0, .1f));
 
 		const auto matLambert_GrayBlue = AddMaterial(new Material_Lambert({ .49f, .57f, .57f }, 1.f));
 
@@ -242,10 +242,11 @@ namespace dae {
 		const auto matLambert_Yellow = AddMaterial(new Material_Lambert{ colors::Yellow, 1.f });
 		const auto matLambertPhong_Blue = AddMaterial(new Material_LambertPhong{ colors::Blue, 1.f, 1.f, 60.f });
 		
+		const auto matCT = AddMaterial(new Material_CookTorrence({ colors::Blue }, 0.f, 0.6f));
 
 		//Spheres
 		AddSphere({ -.75f, 1.f, 0.f }, 1.f, matLambert_Red);
-		AddSphere({ .75f, 1.f, 0.f }, 1.f, matLambertPhong_Blue);
+		AddSphere({ .75f, 1.f, 0.f }, 1.f, matCT);
 
 		//Planes
 		AddPlane({ 0.f, 0.f, 0.f }, { 0.f, 1.f,0.f }, matLambert_Yellow);

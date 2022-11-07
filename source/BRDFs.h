@@ -48,9 +48,7 @@ namespace dae
 		 */
 		static ColorRGB FresnelFunction_Schlick(const Vector3& h, const Vector3& v, const ColorRGB& f0)
 		{
-			const float pow = 1 - Vector3::Dot(h, v);
-
-			return f0 + (ColorRGB(1, 1,1) - f0) * (pow * pow * pow * pow * pow);
+			return f0 + (ColorRGB(1, 1, 1) - f0) * std::powf((1 - Vector3::Dot(h, v)), 5);
 		}
 
 		/**
@@ -62,11 +60,10 @@ namespace dae
 		 */
 		static float NormalDistribution_GGX(const Vector3& n, const Vector3& h, float roughness)
 		{
-			const float alphaSquared = roughness * roughness * roughness * roughness;
-			const float dot = Vector3::Dot(n, h);
-			const float c = Square(dot) * (alphaSquared - 1) + 1;
+			const float alphaSquared = Square((roughness * roughness));
+			const float c = Square(Vector3::Dot(n, h)) * (alphaSquared - 1) + 1;
 
-			return alphaSquared / PI * (c*c);
+			return alphaSquared / (PI * Square(c));
 		}
 
 
@@ -80,7 +77,8 @@ namespace dae
 		static float GeometryFunction_SchlickGGX(const Vector3& n, const Vector3& v, float roughness)
 		{
 			const float dot = Vector3::Dot(n, v);
-			const float k = Square((roughness + 1)) / 8;
+			const float a = Square(roughness);
+			const float k = Square(a + 1) / 8;
 
 			return dot / (dot * (1 - k) + k);
 		}
@@ -95,7 +93,7 @@ namespace dae
 		 */
 		static float GeometryFunction_Smith(const Vector3& n, const Vector3& v, const Vector3& l, float roughness)
 		{
-			return GeometryFunction_SchlickGGX(n, v, roughness) * GeometryFunction_SchlickGGX(n, l, roughness);
+			return (GeometryFunction_SchlickGGX(n, v, roughness) * GeometryFunction_SchlickGGX(n, l, roughness));
 		}
 
 	}

@@ -105,24 +105,25 @@ namespace dae
 
 		ColorRGB Shade(const HitRecord& hitRecord = {}, const Vector3& l = {}, const Vector3& v = {}) override
 		{
-			const Vector3 halfVector = (v + l) / (v + l).Magnitude();
 			const Vector3 normal = hitRecord.normal;
-			const ColorRGB f0 = (m_Metalness == 0) ? ColorRGB(0.04, 0.04, 0.04) : m_Albedo;
+			const ColorRGB f0 = (!m_Metalness) ? ColorRGB(0.04, 0.04, 0.04) : m_Albedo;
+			const Vector3 halfVector = ((v + l) / ((v + l).Magnitude())).Normalized();
 
 			const ColorRGB F = BRDF::FresnelFunction_Schlick(halfVector, v, f0);
 			const float D = BRDF::NormalDistribution_GGX(normal, halfVector, m_Roughness);
 			const float G = BRDF::GeometryFunction_Smith(normal, v, l, m_Roughness);
 
-			const ColorRGB specular = (D * F * G) * (1 / (4 * (Vector3::Dot(v, normal)) * (Vector3::Dot(l, normal))));
-			const ColorRGB kd = (m_Metalness == 0) ? ColorRGB(0, 0, 0) : ColorRGB(1, 1, 1) - F;
-			const ColorRGB diffuse = BRDF::Lambert(kd, specular);
+			const float c = 4 * Vector3::Dot(v, normal) * Vector3::Dot(l, normal);
+			const ColorRGB specular = (D * F * G) * (1 / c);
+			const ColorRGB kd = (m_Metalness) ? ColorRGB(0, 0, 0) : ColorRGB(1, 1, 1) - F;
+			const ColorRGB diffuse = BRDF::Lambert(0, kd);
 
 			return diffuse + specular;
 		}
 
 	private:
 		ColorRGB m_Albedo{0.955f, 0.637f, 0.538f}; //Copper
-		float m_Metalness{1.0f};
+		bool m_Metalness{1};
 		float m_Roughness{0.1f}; // [1.0 > 0.0] >> [ROUGH > SMOOTH]
 	};
 #pragma endregion
