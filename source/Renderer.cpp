@@ -88,7 +88,7 @@ void Renderer::Render(Scene* pScene) const
 						finalColor += E * lambertCos;
 						break;
 					case LightingMode::BRDF:
-						finalColor += materials[closestHit.materialIndex]->Shade(closestHit, invLightRay.Normalized(), viewRay.direction.Normalized());
+						finalColor += materials[closestHit.materialIndex]->Shade(closestHit, invLightRay.Normalized(), -viewRay.direction.Normalized());
 						break;
 					
 					}

@@ -116,7 +116,7 @@ namespace dae
 			const float c = 4 * Vector3::Dot(v, normal) * Vector3::Dot(l, normal);
 			const ColorRGB specular = (D * F * G) * (1 / c);
 			const ColorRGB kd = (m_Metalness) ? ColorRGB(0, 0, 0) : ColorRGB(1, 1, 1) - F;
-			const ColorRGB diffuse = BRDF::Lambert(0, kd);
+			const ColorRGB diffuse = BRDF::Lambert(m_Albedo, kd);
 
 			return diffuse + specular;
 		}
