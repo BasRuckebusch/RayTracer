@@ -51,9 +51,20 @@ namespace dae {
 			}
 		}
 		//TEMP
-		for (auto& triangle : m_Triangles)
+		//	for (auto& triangle : m_Triangles)
+		//	{
+		//		if (GeometryUtils::HitTest_Triangle(triangle, ray, hitTest))
+		//		{
+		//			if (hitTest.t < closestHit.t)
+		//			{
+		//				closestHit = hitTest;
+		//			}
+		//		}
+		//	}
+
+		for (auto& triangleMesh : m_TriangleMeshGeometries)
 		{
-			if (GeometryUtils::HitTest_Triangle(triangle, ray, hitTest))
+			if (GeometryUtils::HitTest_TriangleMesh(triangleMesh, ray, hitTest))
 			{
 				if (hitTest.t < closestHit.t)
 				{
@@ -80,13 +91,21 @@ namespace dae {
 			}
 		}
 		//TEMP
-		for (auto& triangle : m_Triangles)
+		//	for (auto& triangle : m_Triangles)
+		//	{
+		//		if (GeometryUtils::HitTest_Triangle(triangle, ray))
+		//		{
+		//			return true;
+		//		}
+		//	}
+		for (auto& triangleMesh : m_TriangleMeshGeometries)
 		{
-			if (GeometryUtils::HitTest_Triangle(triangle, ray))
+			if (GeometryUtils::HitTest_TriangleMesh(triangleMesh, ray))
 			{
 				return true;
 			}
 		}
+		
 		return false;
 	}
 
@@ -292,12 +311,26 @@ namespace dae {
 		AddPlane({ -5.f, 0.f, 0.f }, { 1.f, 0.f, 0.f }, matLambert_GrayBlue); //LEFT
 
 		//Triangle (temp)
-		
-		auto triangle = Triangle{ {-.75f, .5f, .0f}, {-.75f, 2.f, .0f}, {.75f, .5f, .0f}};
-		triangle.cullMode = TriangleCullMode::NoCulling;
-		triangle.materialIndex = matLambert_White;
+		// auto triangle = Triangle{ {-.75f, .5f, .0f}, {-.75f, 2.f, .0f}, {.75f, .5f, .0f}};
+		// triangle.cullMode = TriangleCullMode::NoCulling;
+		// triangle.materialIndex = matLambert_White;
+		// 
+		// m_Triangles.emplace_back(triangle);
 
-		m_Triangles.emplace_back(triangle);
+		//Triangle Mesh
+		const auto triangleMesh = AddTriangleMesh(TriangleCullMode::NoCulling, matLambert_White);
+		triangleMesh->positions = { {-.75f, -1.f, .0f}, {-.75f, 1.f, .0f}, {.75f, 1.f, 1.f}, {.75f, -1.f, 0.f} };
+		triangleMesh->indices = {
+			0,1,2, //Tri 1
+			0,2,3  //Tri 2
+		};
+		
+		triangleMesh->CalculateNormals();
+
+		triangleMesh->Translate({0.f, 1.5f, 0.f});
+		triangleMesh->RotateY(-45);
+
+		triangleMesh->UpdateTransforms();
 
 		//Lights
 		AddPointLight({ 0.f, 5.f, 5.f }, 50.f, ColorRGB{ 1.f, .61f, .45f }); //BACKLIGHT

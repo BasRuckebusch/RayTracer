@@ -61,7 +61,7 @@ namespace dae
 		static float NormalDistribution_GGX(const Vector3& n, const Vector3& h, float roughness)
 		{
 			const float alphaSquared = Square(Square(roughness));
-			const float c = Square(Vector3::Dot(n, h)) * (alphaSquared - 1) + 1;
+			const float c = Square(Vector3::Dot(n, h)) * (alphaSquared - 1) + 1; //helper variable for readability
 
 			return alphaSquared / (PI * Square(c));
 		}

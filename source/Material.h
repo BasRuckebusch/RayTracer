@@ -113,7 +113,7 @@ namespace dae
 			const float D = BRDF::NormalDistribution_GGX(normal, halfVector, m_Roughness);
 			const float G = BRDF::GeometryFunction_Smith(normal, v, l, m_Roughness);
 
-			const float c = 4 * Vector3::Dot(v, normal) * Vector3::Dot(l, normal);
+			const float c = 4 * Vector3::Dot(v, normal) * Vector3::Dot(l, normal); // helper variable for ColorRGB/float
 			const ColorRGB specular = (D * F * G) * (1 / c);
 			const ColorRGB kd = (m_Metalness) ? ColorRGB(0, 0, 0) : ColorRGB(1, 1, 1) - F;
 			const ColorRGB diffuse = BRDF::Lambert(m_Albedo, kd);
@@ -123,7 +123,7 @@ namespace dae
 
 	private:
 		ColorRGB m_Albedo{0.955f, 0.637f, 0.538f}; //Copper
-		bool m_Metalness{1};
+		bool m_Metalness{true};
 		float m_Roughness{0.1f}; // [1.0 > 0.0] >> [ROUGH > SMOOTH]
 	};
 #pragma endregion

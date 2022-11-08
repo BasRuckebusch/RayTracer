@@ -123,20 +123,46 @@ namespace dae
 
 		void CalculateNormals()
 		{
-			assert(false && "No Implemented Yet!");
+			for (int i = 0; i < indices.size(); i += 3)
+			{
+				const Vector3 a = positions[indices[i + 1]] - positions[indices[i]];
+				const Vector3 b = positions[indices[i + 2]] - positions[indices[i]];
+
+				const Vector3 normal = Vector3::Cross(a, b).Normalized();
+				normals.emplace_back(normal);
+			}
 		}
 
 		void UpdateTransforms()
 		{
-			assert(false && "No Implemented Yet!");
-			//Calculate Final Transform 
-			//const auto finalTransform = ...
+			//assert(false && "No Implemented Yet!");
+
+			transformedPositions.clear();
+			transformedPositions.reserve(positions.size());
+			transformedNormals.reserve(normals.size());
+
+			//Calculate Final Transform
+			const auto finalTransform = translationTransform * rotationTransform * scaleTransform;
 
 			//Transform Positions (positions > transformedPositions)
 			//...
+			for (int i = 0; i < positions.size(); ++i)
+			{
+				const Vector3 vert = finalTransform.TransformPoint(positions[i]);
+				transformedPositions.emplace_back(vert);
+			}
 
 			//Transform Normals (normals > transformedNormals)
 			//...
+			transformedNormals.clear();
+			for (int i = 0; i < indices.size(); i += 3)
+			{
+				const Vector3 a = transformedNormals[indices[i + 1]] - transformedNormals[indices[i]];
+				const Vector3 b = transformedNormals[indices[i + 2]] - transformedNormals[indices[i]];
+
+				const Vector3 normal = Vector3::Cross(a, b).Normalized();
+				transformedNormals.emplace_back(normal);
+			}
 		}
 	};
 #pragma endregion

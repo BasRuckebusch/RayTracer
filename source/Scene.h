@@ -52,7 +52,7 @@ namespace dae
 		std::vector<Material*> m_Materials{};
 
 		//Temp individual triangle
-		std::vector<Triangle> m_Triangles{};
+		//std::vector<Triangle> m_Triangles{};
 
 		Camera m_Camera{};
 

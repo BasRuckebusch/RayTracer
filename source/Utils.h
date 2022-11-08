@@ -83,21 +83,18 @@ namespace dae
 		//TRIANGLE HIT-TESTS
 		inline bool HitTest_Triangle(const Triangle& triangle, const Ray& ray, HitRecord& hitRecord, bool ignoreHitRecord = false)
 		{
-			//todo W5
-			//	assert(false && "No Implemented Yet!");
-
 			const Vector3 a{ triangle.v1 - triangle.v0 };
 			const Vector3 b{ triangle.v2 - triangle.v0 };
-
+			
 			const Vector3 normal = Vector3::Cross(a, b).Normalized();
 			const float dot{ Vector3::Dot(normal, ray.direction) };
 			if (dot == 0) return false;
-
+			
 			const Vector3 center = Vector3{ (Vector3{triangle.v0} + Vector3{triangle.v1} + Vector3{triangle.v2}) * 0.333f };
 			const Vector3 L = center - ray.origin;
-
+			
 			const float t{ Vector3::Dot(L, normal) / Vector3::Dot(ray.direction, normal) };
-
+			
 			if (t < ray.min || t > ray.max)
 			{
 				return false;
@@ -122,7 +119,7 @@ namespace dae
 			if (Vector3::Dot(normal, Vector3::Cross(edgeC, pointToSide)) < 0.0f) {
 				return false;
 			}
-
+			
 			switch (triangle.cullMode) {
 			case TriangleCullMode::NoCulling:
 				break;
@@ -133,7 +130,7 @@ namespace dae
 				if (dot < 0.f) return false;
 				break;
 			}
-
+			
 			hitRecord.origin = ray.origin + t * ray.direction;
 			hitRecord.t = t;
 			hitRecord.materialIndex = triangle.materialIndex;
@@ -151,8 +148,21 @@ namespace dae
 #pragma region TriangeMesh HitTest
 		inline bool HitTest_TriangleMesh(const TriangleMesh& mesh, const Ray& ray, HitRecord& hitRecord, bool ignoreHitRecord = false)
 		{
-			//todo W5
-			assert(false && "No Implemented Yet!");
+			//	//todo W5
+			//	assert(false && "No Implemented Yet!");
+
+			for (int i = 0; i < mesh.indices.size(); i += 3)
+			{
+				Triangle triangle{ mesh.transformedPositions[mesh.indices[i]], mesh.transformedPositions[mesh.indices[i + 1]], mesh.transformedPositions[mesh.indices[i + 2]], mesh.transformedNormals[i/3]};
+				triangle.cullMode = mesh.cullMode;
+				triangle.materialIndex = mesh.materialIndex;
+
+				if (HitTest_Triangle(triangle, ray, hitRecord))
+				{
+					return true;
+				}
+			}
+
 			return false;
 		}
 
