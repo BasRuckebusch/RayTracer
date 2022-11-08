@@ -94,7 +94,7 @@ namespace dae
 
 		void RotateY(float yaw)
 		{
-			rotationTransform = Matrix::CreateRotationY(yaw);
+			rotationTransform = Matrix::CreateRotationY(-yaw); //Inverse to make rotation correct
 		}
 
 		void Scale(const Vector3& scale)
@@ -138,11 +138,12 @@ namespace dae
 			//assert(false && "No Implemented Yet!");
 
 			transformedPositions.clear();
+			transformedNormals.clear();
 			transformedPositions.reserve(positions.size());
 			transformedNormals.reserve(normals.size());
 
 			//Calculate Final Transform
-			const auto finalTransform = translationTransform * rotationTransform * scaleTransform;
+			const auto finalTransform = scaleTransform * rotationTransform * translationTransform;
 
 			//Transform Positions (positions > transformedPositions)
 			//...
@@ -154,7 +155,6 @@ namespace dae
 
 			//Transform Normals (normals > transformedNormals)
 			//...
-			transformedNormals.clear();
 			for (int i = 0; i < indices.size(); i += 3)
 			{
 				const Vector3 a = transformedNormals[indices[i + 1]] - transformedNormals[indices[i]];
