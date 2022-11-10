@@ -157,14 +157,14 @@ namespace dae
 		const float ty1 = (mesh.transformedMinAABB.y - ray.origin.y) / ray.direction.y;
 		const float ty2 = (mesh.transformedMaxAABB.y - ray.origin.y) / ray.direction.y;
 	
-		tmin = std::min(tmin, std::min(ty1, ty2));
-		tmax = std::max(tmax, std::max(ty1, ty2));
+		tmin = std::max(tmin, std::min(ty1, ty2));
+		tmax = std::min(tmax, std::max(ty1, ty2));
 	
 		const float tz1 = (mesh.transformedMinAABB.z - ray.origin.z) / ray.direction.z;
 		const float tz2 = (mesh.transformedMaxAABB.z - ray.origin.z) / ray.direction.z;
 	
-		tmin = std::min(tmin, std::min(tz1, tz2));
-		tmax = std::max(tmax, std::max(tz1, tz2));
+		tmin = std::max(tmin, std::min(tz1, tz2));
+		tmax = std::min(tmax, std::max(tz1, tz2));
 	
 		return tmax > 0 && tmax >= tmin;
 	}
