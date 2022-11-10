@@ -228,15 +228,14 @@ void Renderer::RenderPixel(Scene* pScene, uint32_t pixelIndex, float fov, float 
 				finalColor += E * materials[closestHit.materialIndex]->Shade(closestHit, invLightRay.Normalized(), -viewRay.direction.Normalized()) * lambertCos;
 				break;
 			case LightingMode::ObservedArea:
-				finalColor += E;
+				finalColor += ColorRGB(1,1,1) * lambertCos;
 				break;
 			case LightingMode::Radiance:
-				finalColor += E * lambertCos;
+				finalColor += E;
 				break;
 			case LightingMode::BRDF:
 				finalColor += materials[closestHit.materialIndex]->Shade(closestHit, invLightRay.Normalized(), -viewRay.direction.Normalized());
 				break;
-
 			}
 		}
 	}

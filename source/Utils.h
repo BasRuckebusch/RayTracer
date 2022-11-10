@@ -24,24 +24,22 @@ namespace dae
 			{
 				return false;
 			}
-			else
-			{
-				const float sqrt_d = sqrt(discriminant);
-				float t = (-B - sqrt_d) / (2 * A);
-				if(t < ray.min)
-				{
-					t = (-B + sqrt_d) / (2 * A);
-				}
 
-				if (t <= ray.max && t >= ray.min)
-				{
-					hitRecord.origin = ray.origin + t * ray.direction;
-					hitRecord.t = t;
-					hitRecord.materialIndex = sphere.materialIndex;
-					hitRecord.normal = Vector3{ hitRecord.origin - sphere.origin }.Normalized();
-					hitRecord.didHit = true;
-					return true;
-				}
+			const float sqrt_d = sqrt(discriminant);
+			float t = (-B - sqrt_d) / (2 * A);
+			if(t < ray.min)
+			{
+				t = (-B + sqrt_d) / (2 * A);
+			}
+
+			if (t <= ray.max && t >= ray.min)
+			{
+				hitRecord.origin = ray.origin + t * ray.direction;
+				hitRecord.t = t;
+				hitRecord.materialIndex = sphere.materialIndex;
+				hitRecord.normal = Vector3{ hitRecord.origin - sphere.origin }.Normalized();
+				hitRecord.didHit = true;
+				return true;
 			}
 			return false;
 		}
@@ -131,12 +129,15 @@ namespace dae
 				break;
 			}
 			
-			hitRecord.origin = ray.origin + t * ray.direction;
-			hitRecord.t = t;
-			hitRecord.materialIndex = triangle.materialIndex;
-			hitRecord.normal = normal;
-			hitRecord.didHit = true;
-			return true;
+			if (!ignoreHitRecord)
+			{
+				hitRecord.origin = ray.origin + t * ray.direction;
+				hitRecord.t = t;
+				hitRecord.materialIndex = triangle.materialIndex;
+				hitRecord.normal = normal;
+				hitRecord.didHit = true;
+				return true;
+			}
 		}
 
 		inline bool HitTest_Triangle(const Triangle& triangle, const Ray& ray)
@@ -182,7 +183,7 @@ namespace dae
 				Triangle triangle{ mesh.transformedPositions[mesh.indices[i]], mesh.transformedPositions[mesh.indices[i + 1]], mesh.transformedPositions[mesh.indices[i + 2]], mesh.transformedNormals[i/3]};
 				triangle.cullMode = mesh.cullMode;
 				triangle.materialIndex = mesh.materialIndex;
-
+			
 				if (HitTest_Triangle(triangle, ray, hitRecord))
 				{
 					return true;
