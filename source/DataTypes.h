@@ -146,6 +146,7 @@ namespace dae
 			transformedNormals.clear();
 			transformedPositions.reserve(positions.size());
 			transformedNormals.reserve(normals.size());
+			
 
 			//Calculate Final Transform
 			const auto finalTransform = scaleTransform * rotationTransform * translationTransform;
@@ -161,9 +162,9 @@ namespace dae
 			//...
 			for (int i = 0; i < indices.size(); i += 3)
 			{
-				const Vector3 a{ transformedNormals[indices[i + 1]] - transformedNormals[indices[i]] };
-				const Vector3 b{ transformedNormals[indices[i + 2]] - transformedNormals[indices[i]] };
-
+				const Vector3 a{ transformedPositions[indices[i + 1]] - transformedPositions[indices[i]] };
+				const Vector3 b{ transformedPositions[indices[i + 2]] - transformedPositions[indices[i]] };
+				
 				const Vector3 normal{ Vector3::Cross(a, b).Normalized() };
 				transformedNormals.emplace_back(normal);
 			}

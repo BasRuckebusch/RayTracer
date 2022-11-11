@@ -159,7 +159,7 @@ namespace dae
 		void Initialize() override;
 		void Update(Timer* pTimer) override;
 	private:
-		TriangleMesh* m_Meshes[3]{};
+		TriangleMesh* m_Meshes[3] = {};
 	};
 	//+++++++++++++++++++++++++++++++++++++++++
 	//WEEK 4 Bunny Scene
@@ -181,6 +181,7 @@ namespace dae
 	};
 	//+++++++++++++++++++++++++++++++++++++++++
 	//EXTRA Random Scene
+	//Generates sphere with a random color, size and location
 	class Scene_Extra_RandomScene final : public Scene
 	{
 	public:

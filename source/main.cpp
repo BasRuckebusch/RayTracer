@@ -1,5 +1,5 @@
 //External includes
-#include "vld.h"
+//#include "vld.h"
 #include "SDL.h"
 #include "SDL_surface.h"
 #undef main
@@ -50,8 +50,8 @@ int main(int argc, char* args[])
 	// const auto pScene = new Scene_W2();
 	// const auto pScene = new Scene_W3();
 	// const auto pScene = new Scene_W4();
-	const auto pScene = new SceneW4_ReferenceScene();
-	// const auto pScene = new Scene_W4_BunnyScene();
+	// const auto pScene = new SceneW4_ReferenceScene();
+	const auto pScene = new Scene_W4_BunnyScene();
 	// const auto pScene = new Scene_Extra_RandomScene();
 
 	// const auto pScene = new Scene_TEST();

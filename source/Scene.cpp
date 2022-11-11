@@ -406,7 +406,7 @@ namespace dae {
 		m_Meshes[1]->Translate({ 0.f, 4.5f, 0.f });
 		m_Meshes[1]->UpdateAABB();
 		m_Meshes[1]->UpdateTransforms();
-
+		
 		m_Meshes[2] = AddTriangleMesh(TriangleCullMode::NoCulling, matLambert_White);
 		m_Meshes[2]->AppendTriangle(baseTriangle, true);
 		m_Meshes[2]->Translate({ 1.75f, 4.5f, 0.f });
@@ -473,6 +473,8 @@ namespace dae {
 #pragma endregion
 	void Scene_Extra_RandomScene::Initialize()
 	{
+		srand(time(NULL));
+
 		m_Camera.origin = { 0.f, 3.f, -20.f };
 		m_Camera.ChangeFOV(70.f);
 		//Spheres
