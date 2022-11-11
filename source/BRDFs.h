@@ -33,9 +33,9 @@ namespace dae
 		 */
 		static ColorRGB Phong(float ks, float exp, const Vector3& l, const Vector3& v, const Vector3& n)
 		{
-			const Vector3 r = l - 2 * Vector3::Dot(n,l) * n;
-			const float cosAlpha = Vector3::Dot(r, v);
-			const float PSR = ks * pow(cosAlpha, exp);
+			const Vector3 r{ l - 2 * Vector3::Dot(n,l) * n };
+			const float cosAlpha{ Vector3::Dot(r, v) };
+			const float PSR{ ks * pow(cosAlpha, exp )};
 			return { ColorRGB(PSR , PSR , PSR ) };
 		}
 
@@ -60,8 +60,8 @@ namespace dae
 		 */
 		static float NormalDistribution_GGX(const Vector3& n, const Vector3& h, float roughness)
 		{
-			const float alphaSquared = Square(Square(roughness));
-			const float c = Square(Vector3::Dot(n, h)) * (alphaSquared - 1) + 1; //helper variable for readability
+			const float alphaSquared{ Square(Square(roughness)) };
+			const float c{ Square(Vector3::Dot(n, h)) * (alphaSquared - 1) + 1 }; //helper variable for readability
 
 			return alphaSquared / (PI * Square(c));
 		}
@@ -76,8 +76,8 @@ namespace dae
 		 */
 		static float GeometryFunction_SchlickGGX(const Vector3& n, const Vector3& v, float roughness)
 		{
-			const float dot = Vector3::Dot(n, v);
-			const float k = Square(Square(roughness) + 1) / 8;
+			const float dot{ Vector3::Dot(n, v) };
+			const float k{ Square(Square(roughness) + 1) / 8 };
 
 			return dot / (dot * (1 - k) + k);
 		}

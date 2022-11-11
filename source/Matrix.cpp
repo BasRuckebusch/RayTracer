@@ -119,8 +119,8 @@ namespace dae {
 
 	Matrix Matrix::CreateRotationX(float pitch)
 	{
-		const float c = cos(pitch);
-		const float s = sin(pitch);
+		const float c{ cos(pitch)};
+		const float s{ sin(pitch)};
 
 		return Matrix(
 			Vector4{ 1.f, 0.f, 0.f, 0.f },
@@ -132,8 +132,8 @@ namespace dae {
 
 	Matrix Matrix::CreateRotationY(float yaw)
 	{
-		const float c = cos(yaw);
-		const float s = sin(yaw);
+		const float c{ cos(yaw) };
+		const float s{ sin(yaw) };
 
 		return Matrix(
 			Vector4{ c, 0.f, s, 0.f },
@@ -146,8 +146,8 @@ namespace dae {
 
 	Matrix Matrix::CreateRotationZ(float roll)
 	{
-		const float c = cos(roll);
-		const float s = sin(roll);
+		const float c{ cos(roll) };
+		const float s{ sin(roll) };
 
 		return Matrix(
 			Vector4{ c, -s, 0.f, 0.f },

@@ -59,14 +59,14 @@ namespace dae
 
 		void Update(Timer* pTimer)
 		{
-			const float deltaTime = pTimer->GetElapsed();
-			const float defVelocity = 10.f;
-			float velocity = 10.f;
-			const Matrix ONB = CalculateCameraToWorld();
+			const float deltaTime{ pTimer->GetElapsed() };
+			const float defVelocity{ 10.f };
+			float velocity{ 10.f };
+			const Matrix ONB{ CalculateCameraToWorld() };
 
 
 			//Keyboard Input
-			const uint8_t* pKeyboardState = SDL_GetKeyboardState(nullptr);
+			const uint8_t* pKeyboardState{ SDL_GetKeyboardState(nullptr) };
 
 			// LShift movement increase
 			if (pKeyboardState[SDL_SCANCODE_LSHIFT])
@@ -122,8 +122,8 @@ namespace dae
 			int mouseX{}, mouseY{};
 			const uint32_t mouseState = SDL_GetRelativeMouseState(&mouseX, &mouseY);
 
-			const float MouseSensitivity = 0.2f;
-			const float lookConstraint = 0.95f;
+			const float MouseSensitivity{ 0.2f };
+			// const float lookConstraint{ 0.95f };
 
 			Matrix finalRotation{};
 

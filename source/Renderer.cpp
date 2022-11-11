@@ -31,15 +31,15 @@ Renderer::Renderer(SDL_Window * pWindow) :
 
 void Renderer::Render(Scene* pScene) const
 {
-	Camera& camera = pScene->GetCamera();
+	Camera& camera{ pScene->GetCamera() };
 	camera.CalculateCameraToWorld();
 
-	const float fov = tan((camera.fovAngle * TO_RADIANS) / 2.f);
+	const float fov{ tan((camera.fovAngle * TO_RADIANS) / 2.f) };
 
-	auto& materials = pScene->GetMaterials();
-	auto& lights = pScene->GetLights();
+	auto& materials{ pScene->GetMaterials() };
+	auto& lights{ pScene->GetLights() };
 
-	const float aspectRatio{ static_cast<float>(m_Width) / static_cast<float>(m_Height) };
+	const float aspectRatio{ (m_Width) / static_cast<float>(m_Height) };
 
 	// const float FOV{ tan((camera.fovAngle * TO_RADIANS) / 2) };
 
@@ -99,78 +99,6 @@ void Renderer::Render(Scene* pScene) const
 	#endif
 
 
-	//Loop over all the pixels
-	//	#pragma omp parallel for
-	//	for (int px{}; px < m_Width; ++px)
-	//	{
-	//		for (int py{}; py < m_Height; ++py)
-	//		{
-	//	
-	//			const float cx = (2 * ((px + 0.5f) / m_Width) - 1) * aspectRatio * camera.FOV;
-	//			const float cy = (1 - 2 * ((py + 0.5f) / m_Height)) * camera.FOV;
-	//	
-	//			Vector3 rayDirection{ cx, cy, 1 };
-	//			rayDirection = camera.CalculateCameraToWorld().TransformVector(rayDirection);
-	//	
-	//			Ray viewRay(camera.origin, rayDirection);
-	//			ColorRGB finalColor{};
-	//	
-	//			HitRecord closestHit{};
-	//			pScene->GetClosestHit(viewRay, closestHit);
-	//	
-	//	
-	//			if (closestHit.didHit)
-	//			{
-	//				for (auto& light : lights)
-	//				{
-	//					
-	//					const ColorRGB E = LightUtils::GetRadiance(light, closestHit.origin);
-	//					const float lambertCos = Vector3::Dot(closestHit.normal, LightUtils::GetDirectionToLight(light, closestHit.origin).Normalized());
-	//					if (lambertCos < 0)
-	//					{
-	//						continue;
-	//					}
-	//	
-	//					const Vector3 invLightRay = LightUtils::GetDirectionToLight(light, closestHit.origin);
-	//					if (m_ShadowsEnabled)
-	//					{
-	//						const Ray lray{ closestHit.origin, invLightRay.Normalized(),0.1f, invLightRay.Magnitude() };
-	//	
-	//						if (pScene->DoesHit(lray))
-	//						{
-	//							continue;
-	//						}
-	//					}
-	//					
-	//					switch (m_CurrentLightingMode)
-	//					{
-	//					case LightingMode::Combined:
-	//						finalColor += E * materials[closestHit.materialIndex]->Shade(closestHit, invLightRay.Normalized(), -viewRay.direction.Normalized()) * lambertCos;
-	//						break;
-	//					case LightingMode::ObservedArea:
-	//						finalColor += E;
-	//						break;
-	//					case LightingMode::Radiance:
-	//						finalColor += E * lambertCos;
-	//						break;
-	//					case LightingMode::BRDF:
-	//						finalColor += materials[closestHit.materialIndex]->Shade(closestHit, invLightRay.Normalized(), -viewRay.direction.Normalized());
-	//						break;
-	//					
-	//					}
-	//				}
-	//			}
-	//	
-	//			//Update Color in Buffer
-	//			finalColor.MaxToOne();
-	//	
-	//			m_pBufferPixels[px + (py * m_Width)] = SDL_MapRGB(m_pBuffer->format,
-	//				static_cast<uint8_t>(finalColor.r * 255),
-	//				static_cast<uint8_t>(finalColor.g * 255),
-	//				static_cast<uint8_t>(finalColor.b * 255));
-	//		}
-	//	}
-
 	//@END
 	//Update SDL Surface
 	SDL_UpdateWindowSurface(m_pWindow);
@@ -182,14 +110,14 @@ void Renderer::RenderPixel(Scene* pScene, uint32_t pixelIndex, float fov, float 
 	const int px = pixelIndex % m_Width;
 	const int py = pixelIndex  / m_Width;
 
-	float rx = px + 0.5f;
-	float ry = py + 0.5f;
+	const float rx{ px + 0.5f};
+	const float ry{ py + 0.5f };
 
-	float cx = (2 * (rx / float(m_Width)) - 1) * aspectRatio * fov;
-	float cy = (1 - (2 * (ry / float(m_Height)))) * fov;
+	const float cx{ (2 * (rx / float(m_Width)) - 1) * aspectRatio * fov };
+	const float cy{ (1 - (2 * (ry / float(m_Height)))) * fov };
 
 	Vector3 rayDirection{ cx, cy, 1 };
-	Camera cam = camera;
+	Camera cam{ camera };
 	rayDirection = cam.CalculateCameraToWorld().TransformVector(rayDirection);
 
 	const Ray viewRay(camera.origin, rayDirection);
@@ -204,14 +132,14 @@ void Renderer::RenderPixel(Scene* pScene, uint32_t pixelIndex, float fov, float 
 		for (auto& light : lights)
 		{
 
-			const ColorRGB E = LightUtils::GetRadiance(light, closestHit.origin);
-			const float lambertCos = Vector3::Dot(closestHit.normal, LightUtils::GetDirectionToLight(light, closestHit.origin).Normalized());
+			const ColorRGB E{ LightUtils::GetRadiance(light, closestHit.origin) };
+			const float lambertCos{ Vector3::Dot(closestHit.normal, LightUtils::GetDirectionToLight(light, closestHit.origin).Normalized()) };
 			if (lambertCos < 0)
 			{
 				continue;
 			}
 
-			const Vector3 invLightRay = LightUtils::GetDirectionToLight(light, closestHit.origin);
+			const Vector3 invLightRay{ LightUtils::GetDirectionToLight(light, closestHit.origin) };
 			if (m_ShadowsEnabled)
 			{
 				const Ray lray{ closestHit.origin, invLightRay.Normalized(),0.1f, invLightRay.Magnitude() };
@@ -225,7 +153,7 @@ void Renderer::RenderPixel(Scene* pScene, uint32_t pixelIndex, float fov, float 
 			switch (m_CurrentLightingMode)
 			{
 			case LightingMode::Combined:
-				finalColor += E * materials[closestHit.materialIndex]->Shade(closestHit, invLightRay.Normalized(), -viewRay.direction.Normalized()) * lambertCos;
+				finalColor += E * materials[closestHit.materialIndex]->Shade(closestHit, invLightRay.Normalized(), -viewRay.direction) * lambertCos;
 				break;
 			case LightingMode::ObservedArea:
 				finalColor += ColorRGB(1,1,1) * lambertCos;
@@ -234,7 +162,7 @@ void Renderer::RenderPixel(Scene* pScene, uint32_t pixelIndex, float fov, float 
 				finalColor += E;
 				break;
 			case LightingMode::BRDF:
-				finalColor += materials[closestHit.materialIndex]->Shade(closestHit, invLightRay.Normalized(), -viewRay.direction.Normalized());
+				finalColor += materials[closestHit.materialIndex]->Shade(closestHit, invLightRay.Normalized(), -viewRay.direction);
 				break;
 			}
 		}

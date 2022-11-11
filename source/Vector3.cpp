@@ -29,18 +29,18 @@ namespace dae {
 
 	float Vector3::Normalize()
 	{
-		const float m = Magnitude();
-		x /= m;
-		y /= m;
-		z /= m;
+		const float m = 1 / Magnitude(); // slightly more performant than /= magnitude
+		x *= m;
+		y *= m;
+		z *= m;
 
 		return m;
 	}
 
 	Vector3 Vector3::Normalized() const
 	{
-		const float m = Magnitude();
-		return { x / m, y / m, z / m };
+		const float m = 1 / Magnitude();
+		return { x * m, y * m, z * m };
 	}
 
 	float Vector3::Dot(const Vector3& v1, const Vector3& v2)
