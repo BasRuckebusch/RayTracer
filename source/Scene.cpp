@@ -471,4 +471,27 @@ namespace dae {
 		pMesh->UpdateTransforms();
 	}
 #pragma endregion
+	void Scene_Extra_RandomScene::Initialize()
+	{
+		m_Camera.origin = { 0.f, 3.f, -20.f };
+		m_Camera.ChangeFOV(70.f);
+		//Spheres
+		for (int i = 0; i < 20; ++i)
+		{
+			const auto RandMat = AddMaterial(new Material_CookTorrence({ (rand() % 255 + 1) / 255.f, (rand() % 255 + 1) / 255.f, (rand() % 255 + 1) / 255.f }, (rand() % 1), (rand() % 1) / 10.f));
+
+			const float rX{ (static_cast<float>(rand() % 20 + 1)) - 10 };
+			const float rZ{ (static_cast<float>(rand() % 20 + 1)) - 10 };
+			const float rRadius{ (rand() % 150 + 1) / 100.f};
+			AddSphere({ rX, 2.f, rZ }, rRadius, RandMat);
+		}
+
+		//Plane
+		const auto RandMat = AddMaterial(new Material_CookTorrence({ (rand() % 255 + 1) / 255.f, (rand() % 255 + 1) / 255.f, (rand() % 255 + 1) / 255.f }, (rand() % 1), (rand() % 1) / 10.f));
+		AddPlane({ 0.f, 0.f, 0.f }, { 0.f, 1.f, 0.f }, RandMat); //BOTTOM
+
+		//Lights
+		AddPointLight({ 0.f, 15.f, 0.f }, 215.f, colors::White);
+
+	}
 }

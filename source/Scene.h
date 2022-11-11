@@ -162,7 +162,7 @@ namespace dae
 		TriangleMesh* m_Meshes[3]{};
 	};
 	//+++++++++++++++++++++++++++++++++++++++++
-	//WEEK 4 Test Scene
+	//WEEK 4 Bunny Scene
 	class Scene_W4_BunnyScene final : public Scene
 	{
 	public:
@@ -178,5 +178,20 @@ namespace dae
 		void Update(Timer* pTimer) override;
 	private:
 		TriangleMesh* pMesh{ nullptr };
+	};
+	//+++++++++++++++++++++++++++++++++++++++++
+	//EXTRA Random Scene
+	class Scene_Extra_RandomScene final : public Scene
+	{
+	public:
+		Scene_Extra_RandomScene() = default;
+		~Scene_Extra_RandomScene() override = default;
+
+		Scene_Extra_RandomScene(const Scene_Extra_RandomScene&) = delete;
+		Scene_Extra_RandomScene(Scene_Extra_RandomScene&&) noexcept = delete;
+		Scene_Extra_RandomScene& operator=(const Scene_Extra_RandomScene&) = delete;
+		Scene_Extra_RandomScene& operator=(Scene_Extra_RandomScene&&) noexcept = delete;
+
+		void Initialize() override;
 	};
 }
