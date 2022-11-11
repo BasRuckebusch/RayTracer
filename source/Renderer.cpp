@@ -104,8 +104,8 @@ void Renderer::Render(Scene* pScene) const
 	SDL_UpdateWindowSurface(m_pWindow);
 }
 
-void Renderer::RenderPixel(Scene* pScene, uint32_t pixelIndex, float fov, float aspectRatio,
-	const Camera& camera, const std::vector<Light>& lights, const std::vector<Material*>& materials) const
+void Renderer::RenderPixel(const Scene* pScene, uint32_t pixelIndex, float fov, float aspectRatio,
+                           const Camera& camera, const std::vector<Light>& lights, const std::vector<Material*>& materials) const
 {
 	const int px = pixelIndex % m_Width;
 	const int py = pixelIndex  / m_Width;
@@ -113,8 +113,8 @@ void Renderer::RenderPixel(Scene* pScene, uint32_t pixelIndex, float fov, float 
 	const float rx{ px + 0.5f};
 	const float ry{ py + 0.5f };
 
-	const float cx{ (2 * (rx / float(m_Width)) - 1) * aspectRatio * fov };
-	const float cy{ (1 - (2 * (ry / float(m_Height)))) * fov };
+	const float cx{ (2 * (rx / m_Width) - 1) * aspectRatio * fov };
+	const float cy{ (1 - (2 * (ry / m_Height))) * fov };
 
 	Vector3 rayDirection{ cx, cy, 1 };
 	Camera cam{ camera };
@@ -133,13 +133,14 @@ void Renderer::RenderPixel(Scene* pScene, uint32_t pixelIndex, float fov, float 
 		{
 
 			const ColorRGB E{ LightUtils::GetRadiance(light, closestHit.origin) };
-			const float lambertCos{ Vector3::Dot(closestHit.normal, LightUtils::GetDirectionToLight(light, closestHit.origin).Normalized()) };
+			const Vector3 directionToLight{ LightUtils::GetDirectionToLight(light, closestHit.origin) };
+			const float lambertCos{ Vector3::Dot(closestHit.normal, directionToLight.Normalized()) };
 			if (lambertCos < 0)
 			{
 				continue;
 			}
 
-			const Vector3 invLightRay{ LightUtils::GetDirectionToLight(light, closestHit.origin) };
+			const Vector3 invLightRay{ directionToLight };
 			if (m_ShadowsEnabled)
 			{
 				const Ray lray{ closestHit.origin, invLightRay.Normalized(),0.1f, invLightRay.Magnitude() };

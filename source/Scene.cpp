@@ -1,4 +1,7 @@
 #include "Scene.h"
+
+#include <algorithm>
+
 #include "Utils.h"
 #include "Material.h"
 
@@ -419,11 +422,13 @@ namespace dae {
 	{
 		Scene::Update(pTimer);
 
+		const auto yawAngle = (cos(pTimer->GetTotal()) + 1.f) / 2.f * PI_2;
 		for (const auto m : m_Meshes)
 		{
-			m->RotateY((cos(pTimer->GetTotal()) + 1.f) / 2.f * PI_2);
+			m->RotateY(yawAngle);
 			m->UpdateTransforms();
 		}
+
 	}
 
 	void Scene_W4_BunnyScene::Initialize()

@@ -1,10 +1,9 @@
 #include "Timer.h"
 
+#include <fstream>
+#include <iostream>
 #include <iostream>
 #include <numeric>
-
-#include <iostream>
-#include <fstream>
 
 #include "SDL.h"
 using namespace dae;

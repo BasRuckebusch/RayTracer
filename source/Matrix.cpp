@@ -159,10 +159,9 @@ namespace dae {
 
 	Matrix Matrix::CreateRotation(const Vector3& r)
 	{
-
-		Matrix x{ CreateRotationX(r.x) };
-		Matrix y{ CreateRotationY(r.y) };
-		Matrix z{ CreateRotationZ(r.z) };
+		const Matrix x{ CreateRotationX(r.x) };
+		const Matrix y{ CreateRotationY(r.y) };
+		const Matrix z{ CreateRotationZ(r.z) };
 
 		return  x * y * z;
 	}

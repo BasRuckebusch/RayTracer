@@ -1,7 +1,5 @@
 #pragma once
-#include <cassert>
 #include "Math.h"
-#include <iostream>
 
 namespace dae
 {

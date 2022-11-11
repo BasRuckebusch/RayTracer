@@ -1,5 +1,4 @@
 #pragma once
-#include <cassert>
 
 #include "Math.h"
 #include "vector"
@@ -153,9 +152,9 @@ namespace dae
 
 			//Transform Positions (positions > transformedPositions)
 			//...
-			for (int i = 0; i < positions.size(); ++i)
+			for (auto& position : positions)
 			{
-				transformedPositions.emplace_back(finalTransform.TransformPoint(positions[i]));
+				transformedPositions.emplace_back(finalTransform.TransformPoint(position));
 			}
 
 			//Transform Normals (normals > transformedNormals)

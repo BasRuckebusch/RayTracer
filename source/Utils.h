@@ -1,5 +1,4 @@
 #pragma once
-#include <cassert>
 #include <fstream>
 #include "Math.h"
 #include "DataTypes.h"
@@ -18,7 +17,7 @@ namespace dae
 			const float A{ Vector3::Dot(ray.direction, ray.direction) };
 			const float B{ Vector3::Dot((ray.direction * 2), rayToSphere) };
 			const float C{ Vector3::Dot(rayToSphere, rayToSphere) - sphere.radius * sphere.radius };
-			const float discriminant{ (B * B) - (4 * A * C) };
+			const float discriminant{ (B * B) - (4 * A * C ) };
 
 			if (discriminant < 0.f)
 			{
@@ -54,13 +53,12 @@ namespace dae
 		//PLANE HIT-TESTS
 		inline bool HitTest_Plane(const Plane& plane, const Ray& ray, HitRecord& hitRecord, bool ignoreHitRecord = false)
 		{
-			hitRecord.didHit = false;
+			//hitRecord.didHit = false;
 
 			const float t{ Vector3::Dot((plane.origin - ray.origin), plane.normal) / Vector3::Dot(ray.direction, plane.normal) };
 			if (t > ray.min && t < ray.max && t < hitRecord.t)
 			{
-				Vector3 normal = plane.normal;
-				normal.Normalize();
+				const Vector3 normal = plane.normal.Normalized();
 				hitRecord.origin = ray.origin + t * ray.direction;
 				hitRecord.t = t;
 				hitRecord.materialIndex = plane.materialIndex;
@@ -83,7 +81,7 @@ namespace dae
 		{
 			const Vector3 a{ triangle.v1 - triangle.v0 };
 			const Vector3 b{ triangle.v2 - triangle.v0 };
-
+			
 			const Vector3 normal{ Vector3::Cross(a, b).Normalized() };
 			const float dot{ Vector3::Dot(normal, ray.direction) };
 			if (dot == 0) return false;
@@ -99,22 +97,22 @@ namespace dae
 			}
 
 			const Vector3 p{ ray.origin + t * ray.direction };
-			const Vector3 edgeA{ triangle.v1 - triangle.v0 };
+			Vector3 edge{ triangle.v1 - triangle.v0 };
 			Vector3 pointToSide{ p - triangle.v0 };
-			if (Vector3::Dot(normal, Vector3::Cross(edgeA, pointToSide)) < 0.f)
+			if (Vector3::Dot(normal, Vector3::Cross(edge, pointToSide)) < 0.f)
 			{
 				return false;
 			}
 
-			const Vector3 edgeB{ triangle.v2 - triangle.v1 };
+			edge = triangle.v2 - triangle.v1;
 			pointToSide = p - triangle.v1;
-			if (Vector3::Dot(normal, Vector3::Cross(edgeB, pointToSide)) < 0.0f) {
+			if (Vector3::Dot(normal, Vector3::Cross(edge, pointToSide)) < 0.f) {
 				return false;
 			}
 
-			const Vector3 edgeC{ triangle.v0 - triangle.v2 };
+			edge = triangle.v0 - triangle.v2;
 			pointToSide = p - triangle.v2;
-			if (Vector3::Dot(normal, Vector3::Cross(edgeC, pointToSide)) < 0.0f) {
+			if (Vector3::Dot(normal, Vector3::Cross(edge, pointToSide)) < 0.f) {
 				return false;
 			}
 
@@ -138,6 +136,7 @@ namespace dae
 				hitRecord.didHit = true;
 				return true;
 			}
+			return false;
 		}
 
 		inline bool HitTest_Triangle(const Triangle& triangle, const Ray& ray)
@@ -180,7 +179,10 @@ namespace dae
 
 			for (int i = 0; i < mesh.indices.size(); i += 3)
 			{
-				Triangle triangle{ mesh.transformedPositions[mesh.indices[i]], mesh.transformedPositions[mesh.indices[i + 1]], mesh.transformedPositions[mesh.indices[i + 2]], mesh.transformedNormals[i / 3] };
+				Triangle triangle{
+					mesh.transformedPositions[mesh.indices[i]], mesh.transformedPositions[mesh.indices[i + 1]],
+					mesh.transformedPositions[mesh.indices[i + 2]], mesh.transformedNormals[i / 3]
+				};
 				triangle.cullMode = mesh.cullMode;
 				triangle.materialIndex = mesh.materialIndex;
 
@@ -189,7 +191,6 @@ namespace dae
 					return true;
 				}
 			}
-
 			return false;
 		}
 
