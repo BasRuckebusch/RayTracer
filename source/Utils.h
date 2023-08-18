@@ -81,40 +81,10 @@ namespace dae
 		{
 			const Vector3 a{ triangle.v1 - triangle.v0 };
 			const Vector3 b{ triangle.v2 - triangle.v0 };
-			
+
 			const Vector3 normal{ Vector3::Cross(a, b).Normalized() };
 			const float dot{ Vector3::Dot(normal, ray.direction) };
 			if (dot == 0) return false;
-
-			const Vector3 center{ Vector3{ (Vector3{triangle.v0} + Vector3{triangle.v1} + Vector3{triangle.v2}) * 0.333f } };
-			const Vector3 L{ center - ray.origin };
-
-			const float t{ Vector3::Dot(L, normal) / Vector3::Dot(ray.direction, normal) };
-
-			if (t < ray.min || t > ray.max)
-			{
-				return false;
-			}
-
-			const Vector3 p{ ray.origin + t * ray.direction };
-			Vector3 edge{ triangle.v1 - triangle.v0 };
-			Vector3 pointToSide{ p - triangle.v0 };
-			if (Vector3::Dot(normal, Vector3::Cross(edge, pointToSide)) < 0.f)
-			{
-				return false;
-			}
-
-			edge = triangle.v2 - triangle.v1;
-			pointToSide = p - triangle.v1;
-			if (Vector3::Dot(normal, Vector3::Cross(edge, pointToSide)) < 0.f) {
-				return false;
-			}
-
-			edge = triangle.v0 - triangle.v2;
-			pointToSide = p - triangle.v2;
-			if (Vector3::Dot(normal, Vector3::Cross(edge, pointToSide)) < 0.f) {
-				return false;
-			}
 
 			switch (triangle.cullMode) {
 			case TriangleCullMode::NoCulling:
@@ -125,6 +95,30 @@ namespace dae
 			case TriangleCullMode::FrontFaceCulling:
 				if (dot < 0.f) return false;
 				break;
+			}
+
+			const Vector3 center{ Vector3{ (Vector3{triangle.v0} + Vector3{triangle.v1} + Vector3{triangle.v2}) * 1/3.f}};
+			const Vector3 L{ center - ray.origin };
+
+			const float t{ Vector3::Dot(L, normal) / Vector3::Dot(ray.direction, normal) };
+
+			if (t < ray.min || t > ray.max)
+			{
+				return false;
+			}
+
+			const Vector3 p{ ray.origin + t * ray.direction };
+			const Vector3 vertices[3] = { triangle.v0, triangle.v1, triangle.v2 };
+			for (int i = 0; i < 3; ++i) 
+			{
+				const Vector3 edge{ vertices[(i + 1) % 3] - vertices[i] };
+				const Vector3 pointToSide{ p - vertices[i] };
+
+				// Calculate the dot product and store it
+				const float dotResult{ Vector3::Dot(normal, Vector3::Cross(edge, pointToSide)) };
+
+				if (dotResult < 0.f)
+					return false;
 			}
 
 			if (!ignoreHitRecord)
@@ -213,7 +207,24 @@ namespace dae
 
 		inline ColorRGB GetRadiance(const Light& light, const Vector3& target)
 		{
-			return light.color * (light.intensity / (light.origin - target).SqrMagnitude());
+			switch (light.type)
+			{
+			case LightType::Point: 
+				return light.color * (light.intensity / (light.origin - target).SqrMagnitude());
+			case LightType::Directional: 
+				return light.color * (light.intensity / (light.origin - target).SqrMagnitude());
+			case LightType::AreaRect:
+			case LightType::AreaCircle:
+			case LightType::AreaSphere:
+				const Vector3 directionToLight = GetDirectionToLight(light, target);
+				const float lambertCos = Vector3::Dot(light.normal, directionToLight.Normalized());
+				if (lambertCos < 0)
+				{
+					return {0,0,0};
+				}
+				return light.color * (light.intensity / (directionToLight.SqrMagnitude())) * lambertCos;
+			}
+			
 		}
 	}
 

@@ -169,6 +169,60 @@ namespace dae {
 		return &m_Lights.back();
 	}
 
+	Light* Scene::AddRectAreaLight(const Vector3& origin, float intensity, const Vector3& normal, const Vector3& up, float width, float height, const ColorRGB& color)
+	{
+		Light l;
+		l.type = LightType::AreaRect;
+
+		l.origin = origin;
+		l.normal = normal.Normalized();
+		l.up = up.Normalized();
+		l.right = Vector3::Cross(l.normal, l.up).Normalized();
+		l.color = color;
+		l.intensity = intensity;
+		l.width = width;
+		l.height = height;
+
+		m_Lights.emplace_back(l);
+		return &m_Lights.back();
+	}
+
+	dae::Light* dae::Scene::AddCircleAreaLight(const Vector3& origin, float intensity, const Vector3& normal,
+		const Vector3& up, float radius, const ColorRGB& color)
+	{
+		Light l;
+		l.type = LightType::AreaCircle;
+
+		l.origin = origin;
+		l.normal = normal.Normalized();
+		l.up = up.Normalized();
+		l.right = Vector3::Cross(l.normal, l.up).Normalized();
+		l.color = color;
+		l.intensity = intensity;
+		l.height = radius;
+
+		m_Lights.emplace_back(l);
+		return &m_Lights.back();
+	}
+
+	dae::Light* dae::Scene::AddSphereAreaLight(const Vector3& origin, float intensity, const Vector3& normal,
+		const Vector3& up, float radius, const ColorRGB& color)
+	{
+		Light l;
+		l.type = LightType::AreaSphere;
+
+		l.origin = origin;
+		l.normal = normal.Normalized();
+		l.up = up.Normalized();
+		l.right = Vector3::Cross(l.normal, l.up).Normalized();
+		l.color = color;
+		l.intensity = intensity;
+		l.height = radius;
+
+		m_Lights.emplace_back(l);
+		return &m_Lights.back();
+	}
+
 	unsigned char Scene::AddMaterial(Material* pMaterial)
 	{
 		m_Materials.push_back(pMaterial);
@@ -471,6 +525,7 @@ namespace dae {
 		pMesh->UpdateTransforms();
 	}
 #pragma endregion
+#pragma region SCENE EXTRA
 	void Scene_Extra_RandomScene::Initialize()
 	{
 		srand(time(NULL));
@@ -496,4 +551,81 @@ namespace dae {
 		AddPointLight({ 0.f, 15.f, 0.f }, 215.f, colors::White);
 
 	}
+
+	void Scene_Extra_AreaLight::Initialize()
+	{
+		m_Camera.origin = { 0.f, 3.f, -9.f };
+		m_Camera.ChangeFOV(45.f);
+
+		const auto matCT_GrayRoughMetal = AddMaterial(new Material_CookTorrence({ .95f, .93f, .88f }, 1, 1.f));
+		const auto matCT_GrayMediumMetal = AddMaterial(new Material_CookTorrence({ .95f, .93f, .88f }, 1, .6f));
+		const auto matCT_GraySmoothMetal = AddMaterial(new Material_CookTorrence({ .95f, .93f, .88f }, 1, .1f));
+		const auto matCT_GrayRoughPlastic = AddMaterial(new Material_CookTorrence({ .8f, .8f, .8f }, 0, 1.f));
+		const auto matCT_GrayMediumPlastic = AddMaterial(new Material_CookTorrence({ .8f, .8f, .8f }, 0, .6f));
+		const auto matCT_GraySmoothPlastic = AddMaterial(new Material_CookTorrence({ .8f, .8f, .8f }, 0, .1f));
+
+		const auto matLambert_GrayBlue = AddMaterial(new Material_Lambert({ .49f, .57f, .57f }, 1.f));
+		const auto matLambert_White = AddMaterial(new Material_Lambert(colors::White, 1.f));
+
+		//Spheres
+		AddSphere({ -1.75f, 1.f, 0.f }, .75f, matCT_GrayRoughMetal);
+		AddSphere({ 0.f, 1.f, 0.f }, .75f, matCT_GrayMediumMetal);
+		AddSphere({ 1.75f, 1.f, 0.f }, .75f, matCT_GraySmoothMetal);
+		AddSphere({ -1.75f, 3.f, 0.f }, .75f, matCT_GrayRoughPlastic);
+		AddSphere({ 0.f, 3.f, 0.f }, .75f, matCT_GrayMediumPlastic);
+		AddSphere({ 1.75f, 3.f, 0.f }, .75f, matCT_GraySmoothPlastic);
+
+		//Plane
+		AddPlane({ 0.f, 0.f, 10.f }, { 0.f, 0.f, -1.f }, matLambert_GrayBlue); //BACK
+		AddPlane({ 0.f, 0.f, 0.f }, { 0.f, 1.f, 0.f }, matLambert_GrayBlue); //BOTTOM
+		AddPlane({ 0.f, 10.f, 0.f }, { 0.f, -1.f, 0.f }, matLambert_GrayBlue); //TOP
+		AddPlane({ 5.f, 0.f, 0.f }, { -1.f, 0.f, 0.f }, matLambert_GrayBlue); //RIGHT
+		AddPlane({ -5.f, 0.f, 0.f }, { 1.f, 0.f, 0.f }, matLambert_GrayBlue); //LEFT
+
+		//Triangles
+		const Triangle baseTriangle = { Vector3(-.75f,1.5f,0.f), Vector3(.75f, 0.f,0.f), Vector3(-.75f,0.f,0.f) };
+
+		m_pMeshes[0] = AddTriangleMesh(TriangleCullMode::BackFaceCulling, matLambert_White);
+		m_pMeshes[0]->AppendTriangle(baseTriangle, true);
+		m_pMeshes[0]->Translate({ -1.75f, 4.5f, 0.f });
+		m_pMeshes[0]->UpdateAABB();
+		m_pMeshes[0]->UpdateTransforms();
+		  
+		m_pMeshes[1] = AddTriangleMesh(TriangleCullMode::FrontFaceCulling, matLambert_White);
+		m_pMeshes[1]->AppendTriangle(baseTriangle, true);
+		m_pMeshes[1]->Translate({ 0.f, 4.5f, 0.f });
+		m_pMeshes[1]->UpdateAABB();
+		m_pMeshes[1]->UpdateTransforms();
+		  
+		m_pMeshes[2] = AddTriangleMesh(TriangleCullMode::NoCulling, matLambert_White);
+		m_pMeshes[2]->AppendTriangle(baseTriangle, true);
+		m_pMeshes[2]->Translate({ 1.75f, 4.5f, 0.f });
+		m_pMeshes[2]->UpdateAABB();
+		m_pMeshes[2]->UpdateTransforms();
+
+		//Lights
+		AddRectAreaLight({ -4.5f, 5.f, -5.f }, 30.f, { 1.f, 0.f, 0.f }, { 0.f, 0.f, 1.f }, 2.f, 10.f, { 1.f, 0.f, 1.f });
+		AddCircleAreaLight({ 4.5f, 5.f, -5.f }, 30.f, { 1.f, 0.f, 0.f }, { 0.f, 0.f, 1.f }, 5.f, { 1.f, 1.f, 0.f });
+		AddSphereAreaLight({ 2.f, 4.f, 7.f }, 50.f, { 0.f, 0.f, -1.f }, { 0.f, 0.f, 1.f }, 3.f, { 1.f, 1.f, 1.f });
+
+
+		//AddPointLight({ -4.5, 6, -2.5 }, 10.f, ColorRGB{ 1.f, .0f, .0f });
+		//AddPointLight({ -4.5, 4, -2.5 }, 10.f, ColorRGB{ 0.f, 1.f, .0f });
+		//									 
+		//AddPointLight({ -4.5, 6, -7.5 }, 10.f, ColorRGB{ 0.f, .0f, 1.f });
+		//AddPointLight({ -4.5, 4, -7.5 }, 10.f, ColorRGB{ 1.f, 1.f, .0f });
+
+	}
+
+	void Scene_Extra_AreaLight::Update(Timer* pTimer)
+	{
+		Scene::Update(pTimer);
+		const auto yawAngle = (cos(pTimer->GetTotal()) + 1.f) / 2.f * PI_2;
+		for (const auto m : m_pMeshes)
+		{
+			m->RotateY(yawAngle);
+			m->UpdateTransforms();
+		}
+	}
+#pragma endregion
 }

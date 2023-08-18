@@ -33,8 +33,8 @@ namespace dae
 		{
 			const Vector3 r{ l - 2 * Vector3::Dot(n,l) * n };
 			const float cosAlpha{ Vector3::Dot(r, v) };
-			const float PSR{ ks * pow(cosAlpha, exp )};
-			return { ColorRGB(PSR , PSR , PSR ) };
+			const float PSR{ cosAlpha > 0.0f ? ks * pow(cosAlpha, exp) : 0.f };
+			return { ColorRGB(PSR,PSR,PSR) };
 		}
 
 		/**

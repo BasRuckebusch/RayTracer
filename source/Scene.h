@@ -62,6 +62,11 @@ namespace dae
 
 		Light* AddPointLight(const Vector3& origin, float intensity, const ColorRGB& color);
 		Light* AddDirectionalLight(const Vector3& direction, float intensity, const ColorRGB& color);
+		Light* AddRectAreaLight(const Vector3& origin, float intensity, const Vector3& normal,
+			const Vector3& up, float width, float height, const ColorRGB& color);
+		Light* AddCircleAreaLight(const Vector3& origin, float intensity, const Vector3& normal,
+			const Vector3& up, float radius, const ColorRGB& color);
+		dae::Light* AddSphereAreaLight(const Vector3& origin, float intensity, const Vector3& normal, const Vector3& up, float radius, const ColorRGB& color);
 		unsigned char AddMaterial(Material* pMaterial);
 	};
 
@@ -194,5 +199,21 @@ namespace dae
 		Scene_Extra_RandomScene& operator=(Scene_Extra_RandomScene&&) noexcept = delete;
 
 		void Initialize() override;
+	};
+	class Scene_Extra_AreaLight final : public Scene
+	{
+	public:
+		Scene_Extra_AreaLight() = default;
+		~Scene_Extra_AreaLight() override = default;
+
+		Scene_Extra_AreaLight(const Scene_Extra_AreaLight&) = delete;
+		Scene_Extra_AreaLight(Scene_Extra_AreaLight&&) noexcept = delete;
+		Scene_Extra_AreaLight& operator=(const Scene_Extra_AreaLight&) = delete;
+		Scene_Extra_AreaLight& operator=(Scene_Extra_AreaLight&&) noexcept = delete;
+
+		void Initialize() override;
+		void Update(Timer* pTimer) override;
+	private:
+		TriangleMesh* m_pMeshes[3] = {};
 	};
 }

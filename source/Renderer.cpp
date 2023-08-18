@@ -39,7 +39,7 @@ void Renderer::Render(Scene* pScene) const
 	auto& materials{ pScene->GetMaterials() };
 	auto& lights{ pScene->GetLights() };
 
-	const float aspectRatio{ (m_Width) / static_cast<float>(m_Height) };
+	const float aspectRatio{ m_Width / static_cast<float>(m_Height) };
 
 	// const float FOV{ tan((camera.fovAngle * TO_RADIANS) / 2) };
 
@@ -105,7 +105,7 @@ void Renderer::Render(Scene* pScene) const
 }
 
 void Renderer::RenderPixel(const Scene* pScene, uint32_t pixelIndex, float fov, float aspectRatio,
-                           const Camera& camera, const std::vector<Light>& lights, const std::vector<Material*>& materials) const
+						   const Camera& camera, const std::vector<Light>& lights, const std::vector<Material*>& materials) const
 {
 	const int px = pixelIndex % m_Width;
 	const int py = pixelIndex  / m_Width;
@@ -131,41 +131,132 @@ void Renderer::RenderPixel(const Scene* pScene, uint32_t pixelIndex, float fov, 
 	{
 		for (auto& light : lights)
 		{
-
-			const ColorRGB E{ LightUtils::GetRadiance(light, closestHit.origin) };
-			const Vector3 directionToLight{ LightUtils::GetDirectionToLight(light, closestHit.origin) };
-			const float lambertCos{ Vector3::Dot(closestHit.normal, directionToLight.Normalized()) };
-			if (lambertCos < 0)
+			ColorRGB E{};
+			Vector3 directionToLight{};
+			float lambertCos{};
+			if (light.type == LightType::AreaRect || light.type == LightType::AreaCircle || light.type == LightType::AreaSphere)
 			{
-				continue;
+				const int numSamples{ 16 }; // Number of samples
+				const float sampleWeight { 1.0f / numSamples };
+
+				for (int i = 0; i < numSamples; ++i)
+				{
+					// Generate random samples in the range [0, 1)
+					float u {static_cast<float>(rand()) / RAND_MAX};
+					float v {static_cast<float>(rand()) / RAND_MAX};
+
+					Vector3 samplePoint{};
+					if (light.type == LightType::AreaRect)
+					{
+						// Map samples to the area light's surface
+						samplePoint = light.origin + (u - 0.5f) * light.width * light.right + (v - 0.5f) * light.height * light.up;
+					}
+					else if (light.type == LightType::AreaCircle)
+					{
+						// Map samples to the area light's surface
+						const float phi{ std::sqrt(u) };
+						const double theta{ 2.0f * M_PI * v };
+						
+						// Calculate the sampled point on the round area light's surface
+						samplePoint = light.origin + phi * light.height * (std::cos(theta) * light.right + std::sin(theta) * light.up);
+					}
+					else
+					{
+						const double phi{ 2.0f * M_PI * u };
+						const double theta {std::acos(1.0f - 2.0f * v) };
+
+						Vector3 sampleDirection(
+							std::sin(theta) * std::cos(phi),
+							std::sin(theta) * std::sin(phi),
+							std::cos(theta)
+						);
+
+						// Calculate the sampled point on the spherical area light's surface
+						samplePoint = light.origin + light.height * sampleDirection;
+					}
+
+
+					// Calculate direction from the hit point to the sampled point on the area light
+					Vector3 directionToLight{ samplePoint - closestHit.origin };
+					const Vector3 nInvLightRay{ directionToLight.Normalized() };
+					const float distanceSq{ directionToLight.SqrMagnitude() };
+
+
+					lambertCos = Vector3::Dot(closestHit.normal, directionToLight.Normalized());
+					if (lambertCos < 0)
+					{
+						continue;
+					}
+
+					if (m_ShadowsEnabled)
+					{
+						const Ray lray{ closestHit.origin, nInvLightRay,0.1f, directionToLight.Magnitude() };
+
+						if (pScene->DoesHit(lray))
+						{
+							continue;
+						}
+					}
+
+					// Calculate radiance contribution from the sampled point
+					E += light.color * (light.intensity / distanceSq);
+
+					switch (m_CurrentLightingMode)
+					{
+					case LightingMode::Combined:
+						finalColor += E * materials[closestHit.materialIndex]->Shade(closestHit, nInvLightRay, -viewRay.direction) * lambertCos * sampleWeight;
+						break;
+					case LightingMode::ObservedArea:
+						finalColor += ColorRGB(1, 1, 1) * lambertCos * sampleWeight;;
+						break;
+					case LightingMode::Radiance:
+						finalColor += E * sampleWeight;;
+						break;
+					case LightingMode::BRDF:
+						finalColor += materials[closestHit.materialIndex]->Shade(closestHit, nInvLightRay, -viewRay.direction) * sampleWeight;;
+						break;
+					}
+				}
+
 			}
-
-			const Vector3 invLightRay{ directionToLight };
-			if (m_ShadowsEnabled)
+			else
 			{
-				const Ray lray{ closestHit.origin, invLightRay.Normalized(),0.1f, invLightRay.Magnitude() };
-
-				if (pScene->DoesHit(lray))
+				E = LightUtils::GetRadiance(light, closestHit.origin);
+				directionToLight = LightUtils::GetDirectionToLight(light, closestHit.origin);
+				lambertCos = Vector3::Dot(closestHit.normal, directionToLight.Normalized());
+				if (lambertCos < 0)
 				{
 					continue;
 				}
+				const Vector3 invLightRay{ directionToLight };
+				const Vector3 nInvLightRay{ invLightRay.Normalized() };
+				if (m_ShadowsEnabled)
+				{
+					const Ray lray{ closestHit.origin, nInvLightRay,0.1f, invLightRay.Magnitude() };
+
+					if (pScene->DoesHit(lray))
+					{
+						continue;
+					}
+				}
+
+				switch (m_CurrentLightingMode)
+				{
+				case LightingMode::Combined:
+					finalColor += E * materials[closestHit.materialIndex]->Shade(closestHit, nInvLightRay, -viewRay.direction) * lambertCos;
+					break;
+				case LightingMode::ObservedArea:
+					finalColor += ColorRGB(1, 1, 1) * lambertCos;
+					break;
+				case LightingMode::Radiance:
+					finalColor += E;
+					break;
+				case LightingMode::BRDF:
+					finalColor += materials[closestHit.materialIndex]->Shade(closestHit, nInvLightRay, -viewRay.direction);
+					break;
+				}
 			}
 
-			switch (m_CurrentLightingMode)
-			{
-			case LightingMode::Combined:
-				finalColor += E * materials[closestHit.materialIndex]->Shade(closestHit, invLightRay.Normalized(), -viewRay.direction) * lambertCos;
-				break;
-			case LightingMode::ObservedArea:
-				finalColor += ColorRGB(1,1,1) * lambertCos;
-				break;
-			case LightingMode::Radiance:
-				finalColor += E;
-				break;
-			case LightingMode::BRDF:
-				finalColor += materials[closestHit.materialIndex]->Shade(closestHit, invLightRay.Normalized(), -viewRay.direction);
-				break;
-			}
 		}
 	}
 

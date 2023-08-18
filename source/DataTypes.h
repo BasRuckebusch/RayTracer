@@ -233,17 +233,25 @@ namespace dae
 	enum class LightType
 	{
 		Point,
-		Directional
+		Directional,
+		AreaRect,
+		AreaCircle,
+		AreaSphere,
 	};
 
 	struct Light
 	{
 		Vector3 origin{};
+		Vector3 normal{};
 		Vector3 direction{};
+		Vector3 up{};
+		Vector3 right{};
 		ColorRGB color{};
 		float intensity{};
 
 		LightType type{};
+		float width{};
+		float height{};
 	};
 #pragma endregion
 #pragma region MISC
